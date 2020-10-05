@@ -12,6 +12,8 @@ public class Main {
 	
 	static final int nRows = 50; //160
 	static final int nCols = 50; //120
+	static final int nHardTerrainRegion = 8; //8
+	static final int hardTerrainRegionSize = 5; //31
 	static final int nHighways = 4; //4
 	static final int highwayBlocks = 5; //20
 	static final int minHighwayLength = 50; //100
@@ -31,7 +33,7 @@ public class Main {
 	static int[] start = new int[2];
 	static int[] goal = new int[2];
 	
-	
+	//Used for initialize()
 	static HashMap<Integer, ArrayList<Integer>> highwayPath = new HashMap<Integer, ArrayList<Integer>>(); //key = y, list = x
 	
 	
@@ -187,14 +189,13 @@ public class Main {
 		}
 		System.out.println("Unblocked cells generated");
 		
-		//select region around 8 random (x, y) for hard terrain 
-		for(int i = 0; i < 8; i++) {
+		//select region around  random (x, y) for hard terrain 
+		for(int i = 0; i < nHardTerrainRegion; i++) {
 			//TODO: make sure (randX,randY) is not repeated
 			int randY = ThreadLocalRandom.current().nextInt(0, nRows);
 			int randX = ThreadLocalRandom.current().nextInt(0, nCols);
-			int regionSize = 3; //31
-			for(int m = randY-regionSize; m < randY+regionSize; m++ ) {
-				for(int n = randX-regionSize; n < randX+regionSize; n++) {
+			for(int m = randY-hardTerrainRegionSize; m < randY+hardTerrainRegionSize; m++ ) {
+				for(int n = randX-hardTerrainRegionSize; n < randX+hardTerrainRegionSize; n++) {
 					if( m >= 0 && m < nRows && n >= 0 && n < nCols) {
 						Random rand = new Random();
 						boolean isHard = rand.nextBoolean();
