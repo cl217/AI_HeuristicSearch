@@ -16,7 +16,7 @@ public class Main {
 	static final int highwayBlocks = 5; //20
 	static final int minHighwayLength = 50; //100
 	static final int blockedCells = 5; //3840
-	static final int startWithin = 5; //
+	static final int startWithin = 5; //20
 	static final int minGoalDistance = 20; //100
 	
 	/*
@@ -94,11 +94,7 @@ public class Main {
 	
 	
 	
-	
-	
-	
-	
-	
+
 	
 	
 	/** helper for makeHighway() */
@@ -118,7 +114,7 @@ public class Main {
 		return true;
 	}
 	
-	/** DONE
+	/** helper for intialize()
 	 * @param start : int[] for starting position
 	 * @param direction : 1-up, 2-down, 3-left, 4-right	
 	 * @return null if invalid path, else int[] for ending position
@@ -183,9 +179,7 @@ public class Main {
 		return null;
 	}
 	
-	/** DONE 
-	 * Generates map with terrain and start and goal position
-	 * **/
+	/** DONE: Generates map with terrain and start and goal position */
 	public static void initialize(){
 		//initialize with all unblocked cells
 		for(char[] row : map) {
