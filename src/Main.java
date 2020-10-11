@@ -1,77 +1,54 @@
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.swing.*;
 
 public class Main {
 
 	
-	static final int nRows = 50; //160
-	static final int nCols = 50; //120
-	static final int nHardTerrainRegion = 8; //8
+	static final int nRows = 10; //120
+	static final int nCols = 30; //160
+	static final int nHardTerrainRegion = 2; //8
 	static final int hardTerrainRegionSize = 5; //31
 	static final int nHighways = 4; //4
 	static final int highwayBlocks = 5; //20
-	static final int minHighwayLength = 50; //100
-	static final int blockedCells = 5; //3840
-	static final int startWithin = 5; //20
-	static final int minGoalDistance = 20; //100
+	static final int minHighwayLength = 10; //100
+	static final int blockedCells = 2; //3840
+	static final int startWithin = 2; //20
+	static final int minGoalDistance = 100; //100
 	
 	/*
-	 	Use ’0’ to indicate a blocked cell
-		Use ’1’ to indicate a regular unblocked cell
-		Use ’2’ to indicate a hard to traverse cell
-		Use ’a’ to indicate a regular unblocked cell with a highway
-	 	Use ’b’ to indicate a hard to traverse cell with a highway 
+	 	Use ï¿½0ï¿½ to indicate a blocked cell
+		Use ï¿½1ï¿½ to indicate a regular unblocked cell
+		Use ï¿½2ï¿½ to indicate a hard to traverse cell
+		Use ï¿½aï¿½ to indicate a regular unblocked cell with a highway
+	 	Use ï¿½bï¿½ to indicate a hard to traverse cell with a highway 
 	*/
 	/** Generated or loaded from file */
-	static char [][] map = new char[nRows][nCols];
-	static int[] start = new int[2];
-	static int[] goal = new int[2];
-	
-	//Used for initialize()
-	static HashMap<Integer, ArrayList<Integer>> highwayPath = new HashMap<Integer, ArrayList<Integer>>(); //key = y, list = x
+	static ArrayList<int[]> hardTerrainCenter = new ArrayList<int[]>();
+	static Cell [][] map = new Cell[nRows][nCols];
+	static int[] start = new int[2]; // (x,y)
+	static int[] goal = new int[2];  // (x,y)
 	
 	
-	/* TODO: Page 3 of PDF */
-	public static void intitalizeFromFile(String filePath) {
-		
-	}
-	
-	/* TODO: Page 3 of PDF*/
-	public static void outputToFile() {
-		
-	}
-	
-	
-	/* TODO: Page 2 of PDF
-	 	- The cost of transitioning between two regular unblocked cells is 1 if the agent moves horizontally or vertically and sqrt(2) if the agent moves diagonally. 
-	 	- moving horizontally or vertically between two hard to traverse cells has a cost of 2;
-		- moving diagonally between two hard to traverse cells has a cost of sqrt(8);
-		- moving horizontally or vertically between a regular unblocked cell and a hard to traverse cell(in either direction) has a cost of 1.5;
-		- moving diagonally between a regular unblocked cell and a hard to traverse cell (in either direction) has a cost of (sqrt(2)+sqrt(8))/2;
-	 	- Highway: if we are starting from a cell that contains a highway and we are moving
-			horizontally or vertically into a cell that also contains a highway, the cost of this motion is four times
-			less than it would be otherwise (i.e., 0.25 if both cells are regular, 0.5 if both cells are hard to traverse
-			and 0.375 if we are moving between a regular unblocked cell and a hard to traverse cell). 
-	 */
-	public static double getTransitionCost(int[] from, int[] to) {
-		return 0;
-	}
 	
 	/* TODO */
 	public static void shortestPath(int[] start, int[] goal) {
-		
 	}
-	
 	
 	/** MAIN **/
 	public static void main (String[] args) {
-		
+
 		Scanner in = new Scanner(System.in);
 		String input = "";
 		while( !input.equals("1") && !input.equals("2") ) {
@@ -84,30 +61,101 @@ public class Main {
 		}else {
 			System.out.println("Enter file path:");
 			input = in.nextLine();
-			intitalizeFromFile(input);
+			intializeFromFile(input);
+			//intializeFromFile("C:\\Users\\Cindy\\Desktop\\map.txt");
 		}
+		
+		
+		input = "";
+		while( !input.equals("1") && !input.equals("2") ) {
+			System.out.println("Choose:\n (1) Show GUI \n (2) Output to file");
+			input = in.nextLine();
+		}
+		
+		if(input.equals("1")) {
+			System.out.println("Not implemented");
+		}else {
+			System.out.println("Enter file path:");
+			input = in.nextLine();
+			outputToFile(input);
+			//outputToFile("C:\\Users\\Cindy\\Desktop\\mapoutput.txt");
+		}
+		
 		in.close();
 		
-		ForTesting.testPrintMapToFile(map, "C:\\Users\\Cindy\\Desktop\\map.txt");
+		
 	}
 	
 	
 	
+	/* Done: Description - Page 3 of PDF */
+	public static void intializeFromFile(String filePath) {
+	    try {
+	        File file = new File(filePath);
+	        Scanner sc = new Scanner(file);
+	        
+	        //read start and goal coordinates
+	        String[] arr = sc.nextLine().split(",");
+	        start[0] = Integer.parseInt(arr[0]);
+	        start[1] = Integer.parseInt(arr[1]);
+	        arr = sc.nextLine().split(",");
+	        goal[0] = Integer.parseInt(arr[0]);
+	        goal[1] = Integer.parseInt(arr[1]);
+	        
+	        //read hard terrain centers
+	        for(int i = 0; i < nHardTerrainRegion; i++) {
+		        arr = sc.nextLine().split(",");
+		        hardTerrainCenter.add(new int[] {Integer.parseInt(arr[0]), Integer.parseInt(arr[1])});
+	        }
+	    
+	        int y = 0;
+	        while (sc.hasNextLine()) {
+	          String line = sc.nextLine();
+	          for(int x = 0; x < line.length(); x++) {
+	        	  map[y][x] = new Cell(line.charAt(x)) ;
+	          }
+	          y++;
+	        }
+	        
+	        sc.close();
+	      } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	      }
+	}
 	
-	
-	
+	/*DONE: Decription - Page 3 of PDF*/
+	public static void outputToFile(String filePath) {
+        try {
+			FileWriter writer = new FileWriter(filePath);
+			writer.write(start[0]+","+start[1]+"\n");
+			writer.write(goal[0]+","+goal[1]+"\n");
+			for( int[]arr : hardTerrainCenter ) {
+				writer.write(arr[0]+","+arr[1]+"\n");
+			}
+			for(int i = 0; i < nRows; i++) {
+				for(int k = 0; k < nCols; k++) {
+					writer.write(map[i][k].c);
+				}
+				writer.write("\n");
+			}
+			writer.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	
-	
 	/** helper for makeHighway() */
-	public static boolean isValidHighway(int x, int y) {
+	
+	public static boolean isValidHighway(int x, int y, HashMap<Integer, ArrayList<Integer>> highwayPath ) {
 		if( x < 0 || x >= nCols) {
 			return false;
 		}
 		if( y < 0 || y >= nRows) {
 			return false;
 		}
-		if( map[y][x] == 'a' || map[y][x] =='b' ) {
+		if( map[y][x].c == 'a' || map[y][x].c =='b' ) {
 			return false;
 		}
 		if( highwayPath.containsKey(y) && highwayPath.get(y).contains(x)) {
@@ -116,12 +164,13 @@ public class Main {
 		return true;
 	}
 	
+	
 	/** helper for intialize()
 	 * @param start : int[] for starting position
 	 * @param direction : 1-up, 2-down, 3-left, 4-right	
 	 * @return null if invalid path, else int[] for ending position
 	 */
-	public static int[] makeHighway(int[] start, int direction) {
+	public static int[] makeHighway(int[] start, int direction, HashMap<Integer, ArrayList<Integer>> highwayPath) {
 		
 		if( direction == 1 || direction == 2 ) { //going vertical
 			int x = start[0];
@@ -131,7 +180,7 @@ public class Main {
 			if(yEnd >= nRows) { yEnd = nRows; }
 			if(yEnd < 0 ) { yEnd = 0; }
 			for(int y = yStart; y < yEnd; y++) { //check path
-				if(!isValidHighway(x, y)) {
+				if(!isValidHighway(x, y, highwayPath)) {
 					return null;
 				}
 			}
@@ -158,7 +207,7 @@ public class Main {
 			int xEnd = (direction == 3)? start[0]+1 : start[0]+highwayBlocks;
 			if(xEnd >= nCols) { xEnd = nCols; }
 			for(int x = xStart; x < xEnd; x++) { //check path
-				if(!isValidHighway(x, y)) {
+				if(!isValidHighway(x, y, highwayPath)) {
 					return null;
 				}
 			}
@@ -182,46 +231,80 @@ public class Main {
 	}
 	
 	/** DONE: Generates map with terrain and start and goal position */
+	
 	public static void initialize(){
-		//initialize with all unblocked cells
-		for(char[] row : map) {
-			Arrays.fill(row, '1');
+		
+		//select start: 1-right, 2-left, 3-top, 4-bottom
+		int startSide = ThreadLocalRandom.current().nextInt(1, 5);
+		switch(startSide) {
+			case 1: //right
+				start[0] = ThreadLocalRandom.current().nextInt(0, startWithin);
+				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+				break;
+			case 2: //left
+				start[0] = ThreadLocalRandom.current().nextInt(nCols-startWithin, nCols);
+				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+				break;
+			case 3: //top
+				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+				start[1] = ThreadLocalRandom.current().nextInt(0, startWithin);
+				break;
+			case 4: //bottom
+				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+				start[1] = ThreadLocalRandom.current().nextInt(nRows-startWithin, nRows);
+				break;
 		}
-		System.out.println("Unblocked cells generated");
+		System.out.println("Start generated: " + "(" + start[0] + "," + start[1] + ")");
+		 
+		//TODO
+		goal[0] = nCols - 2; 
+		goal[1] = nRows - 2;
+		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")" + " Hardcorded");
+		
+		
+		
+		//initialize with all unblocked cells and their g/h/f values
+		for(int y = 0; y < nRows; y++) {
+			for(int x = 0; x < nCols; x++) {
+				map[y][x] = new Cell('1');
+			}
+		}
+		//System.out.println("Unblocked cells generated");
 		
 		//select region around  random (x, y) for hard terrain 
 		for(int i = 0; i < nHardTerrainRegion; i++) {
 			//TODO: make sure (randX,randY) is not repeated
 			int randY = ThreadLocalRandom.current().nextInt(0, nRows);
 			int randX = ThreadLocalRandom.current().nextInt(0, nCols);
+			hardTerrainCenter.add(new int[] {randX, randY});
 			for(int m = randY-hardTerrainRegionSize; m < randY+hardTerrainRegionSize; m++ ) {
 				for(int n = randX-hardTerrainRegionSize; n < randX+hardTerrainRegionSize; n++) {
 					if( m >= 0 && m < nRows && n >= 0 && n < nCols) {
 						Random rand = new Random();
 						boolean isHard = rand.nextBoolean();
 						if(isHard) {
-							map[m][n] = '2';
+							map[m][n].c = '2';
 						}
 					}
 				}
 			}
 		}
-		System.out.println("Hard terrain generated");
+		//System.out.println("Hard terrain generated");
 		
 		//select 4 paths for highways
 		int validHighways = 0;
 		while( validHighways < nHighways ) {
-			highwayPath = new HashMap<Integer, ArrayList<Integer>>();
+			HashMap<Integer, ArrayList<Integer>> highwayPath = new HashMap<Integer, ArrayList<Integer>>();
 			int[] pos = null; //{x, y}
 			int direction = -1;
 			while(pos == null) {
 				direction = ThreadLocalRandom.current().nextInt(1, 5); //1-up, 2-down, 3-left, 4-right
 				if( direction == 1 || direction == 2) { //start at x side
 					int yPos = (direction == 1)? nRows-1 : 0;
-					pos = makeHighway(new int[] {ThreadLocalRandom.current().nextInt(0, nCols), yPos}, direction);
+					pos = makeHighway(new int[] {ThreadLocalRandom.current().nextInt(0, nCols), yPos}, direction, highwayPath);
 				}else if( direction == 3 || direction == 4) { //start at y side
 					int xPos = (direction == 3)? nCols-1 : 0;
-					pos = makeHighway(new int[] {xPos, ThreadLocalRandom.current().nextInt(0, nRows)}, direction);
+					pos = makeHighway(new int[] {xPos, ThreadLocalRandom.current().nextInt(0, nRows)}, direction, highwayPath);
 				}
 			}
 			
@@ -249,7 +332,7 @@ public class Main {
 					startPos[1] = pos[1];
 				}
 				
-				int[] newPos = makeHighway(startPos, direction);
+				int[] newPos = makeHighway(startPos, direction, highwayPath);
 				if( newPos != null ) {
 					pos = newPos;
 				}else {
@@ -277,15 +360,15 @@ public class Main {
 			}
 			if( highwayLength >= minHighwayLength) {
 				validHighways++;
-				System.out.println("Highway generated (" + validHighways + ")");
+				//System.out.println("Highway generated (" + validHighways + ")");
 				//key = y; value = x
 				for( int y : highwayPath.keySet() ) {
 					ArrayList<Integer> list = highwayPath.get(y);
 					for(int x : list) {
-						if(map[y][x] == '1') {
-							map[y][x] = 'a';
-						}else if( map[y][x] == '2') {
-							map[y][x] = 'b';
+						if(map[y][x].c == '1') {
+							map[y][x].c = 'a';
+						}else if( map[y][x].c == '2') {
+							map[y][x].c = 'b';
 						}
 					}
 				}
@@ -296,37 +379,16 @@ public class Main {
 		while(nBlocked < blockedCells) {
 			int randX = ThreadLocalRandom.current().nextInt(0, nCols); 
 			int randY = ThreadLocalRandom.current().nextInt(0, nRows);
-			if(map[randY][randX] != 'a' && map[randY][randX] != 'b' && map[randY][randX] != '0') {
-				map[randY][randX] = '0';
+			if(map[randY][randX].c != 'a' && map[randY][randX].c != 'b' && map[randY][randX].c != '0') {
+				map[randY][randX].c = '0';
 				nBlocked++;
 			}
 		}
-		System.out.println("Blocked cells generated");
+		//System.out.println("Blocked cells generated");
 		
-		//select start: 1-right, 2-left, 3-top, 4-bottom
-		int startSide = ThreadLocalRandom.current().nextInt(1, 5);
-		switch(startSide) {
-			case 1: //right
-				start[0] = ThreadLocalRandom.current().nextInt(0, startWithin);
-				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
-				break;
-			case 2: //left
-				start[0] = ThreadLocalRandom.current().nextInt(nCols-startWithin, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
-				break;
-			case 3: //top
-				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(0, startWithin);
-				break;
-			case 4: //bottom
-				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(nRows-startWithin, nRows);
-				break;
-		}
-		System.out.println("Start generated: " + "(" + start[0] + "," + start[1] + ")");
-		 
-		//TODO
-		System.out.println("Goal generated: " + "Not Implemented Yet");
+		System.out.println("Map generated");
+		
+
 		
 	}
 	
