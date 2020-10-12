@@ -1,3 +1,13 @@
+/*
+ * Introduction to AI
+ * Assignment 1: Heuristic Search
+ * 
+ * Made by:
+ * Cindy Lin
+ * Amielyn Musa
+ * Sanidhi B
+ */
+
 import java.util.PriorityQueue;
 
 public abstract class HeuristicSearch {
