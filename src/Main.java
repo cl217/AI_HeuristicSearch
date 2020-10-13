@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -16,15 +18,15 @@ import javax.swing.*;
 public class Main {
 
 	
-	static final int nRows = 10; //120
-	static final int nCols = 30; //160
-	static final int nHardTerrainRegion = 2; //8
-	static final int hardTerrainRegionSize = 5; //31
-	static final int nHighways = 4; //4
+	static final int nRows = 30; //120
+	static final int nCols = 50; //160
+	static final int nHardTerrainRegion = 10; //8
+	static final int hardTerrainRegionSize = 2; //31
+	static final int nHighways = 2; //4
 	static final int highwayBlocks = 5; //20
-	static final int minHighwayLength = 10; //100
-	static final int blockedCells = 2; //3840
-	static final int startWithin = 2; //20
+	static final int minHighwayLength = 30; //100
+	static final int blockedCells = 10; //3840
+	static final int startWithin = 1; //20
 	static final int minGoalDistance = 100; //100
 	
 	/*
@@ -39,7 +41,7 @@ public class Main {
 	static Cell [][] map = new Cell[nRows][nCols];
 	static int[] start = new int[2]; // (x,y)
 	static int[] goal = new int[2];  // (x,y)
-	
+	static double weight = -1;
 	
 	
 	/* TODO */
@@ -49,6 +51,31 @@ public class Main {
 	/** MAIN **/
 	public static void main (String[] args) {
 
+
+		initialize();
+
+
+		//TODO: HeuristicSearch search() function has to be implemented
+		HeuristicSearch uniformCostSearch = new UniformCostSearch();
+		ArrayList<Cell> uniformCostSearch_ShortestPath = uniformCostSearch.search();
+
+		HeuristicSearch aSearch = new A_Search();
+		ArrayList<Cell> aSearch_ShortestPath = aSearch.search();
+
+		HeuristicSearch WeightedASearch = new WeightedASearch();
+		ArrayList<Cell> WeightedASearch_ShortestPath = WeightedASearch.search();
+		
+		
+		showGUI(uniformCostSearch_ShortestPath); //shows GUI with path highlighted
+
+
+
+		//outputToFile("C:\\Users\\Cindy\\Desktop\\mapoutput.txt");
+		
+
+		
+		
+		/*
 		Scanner in = new Scanner(System.in);
 		String input = "";
 		while( !input.equals("1") && !input.equals("2") ) {
@@ -73,7 +100,7 @@ public class Main {
 		}
 		
 		if(input.equals("1")) {
-			System.out.println("Not implemented");
+			showGUI();
 		}else {
 			System.out.println("Enter file path:");
 			input = in.nextLine();
@@ -82,9 +109,17 @@ public class Main {
 		}
 		
 		in.close();
+		*/
 		
 		
 	}
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -112,7 +147,7 @@ public class Main {
 	        while (sc.hasNextLine()) {
 	          String line = sc.nextLine();
 	          for(int x = 0; x < line.length(); x++) {
-	        	  map[y][x] = new Cell(line.charAt(x)) ;
+	        	  map[y][x] = new Cell(line.charAt(x), new int[] {x, y}) ;
 	          }
 	          y++;
 	        }
@@ -143,6 +178,84 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void showGUI(ArrayList<Cell> path) {
+		int bSize = 30;
+        JFrame f = new JFrame();
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(nRows, nCols));
+        
+        HashMap<JButton, Cell> buttonMap = new HashMap<JButton, Cell>();
+        for( int i = 0; i < nRows; i++ ) {
+        	for(int k = 0; k < nCols; k++ ) {
+        		String text = Character.toString(map[i][k].c);
+        		//String text = Double.toString(map[i][k].gValue);
+        		//String text = Character.toString(map[i][k].cName);
+        		
+                JButton button = new JButton(text);
+                buttonMap.put(button, map[i][k]);
+                button.setFont(new Font("Arial", Font.PLAIN, 10));
+                button.setMargin(new Insets(0, 0, 0, 0));
+                button.addActionListener(new ActionListener() {
+                	@Override
+                	public void actionPerformed(ActionEvent e) {
+                		Cell c = buttonMap.get(button);
+                		System.out.println("g(" + c.gValue  + "), h(" + c.hValue + "), f(" + c.fValue + ")");
+                	}
+                });
+                
+                if(i==start[1] && k == start[0] ) {
+                	button.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.RED, 3), 
+                            BorderFactory.createEmptyBorder(
+                                button.getBorder().getBorderInsets(button).top, 
+                                button.getBorder().getBorderInsets(button).left, 
+                                button.getBorder().getBorderInsets(button).bottom, 
+                                button.getBorder().getBorderInsets(button).right)));
+                }
+                
+                if(i==goal[1] && k == goal[0]) {
+                	button.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.BLUE, 3), 
+                            BorderFactory.createEmptyBorder(
+                                button.getBorder().getBorderInsets(button).top, 
+                                button.getBorder().getBorderInsets(button).left, 
+                                button.getBorder().getBorderInsets(button).bottom, 
+                                button.getBorder().getBorderInsets(button).right)));
+                }
+                
+                
+                switch(map[i][k].c) {
+                	case '0': button.setBackground(Color.BLACK); break; 
+                	case '1': button.setBackground(Color.GREEN); break;
+                	case '2': button.setBackground(new Color(0x994C00)); break;
+                	case 'a': button.setBackground(Color.LIGHT_GRAY); break;
+                	case 'b': button.setBackground(Color.GRAY); break;
+                }
+                
+                if(path.contains(map[i][k])) {
+                	button.setBackground(Color.YELLOW);
+                }
+                
+                
+                button.setPreferredSize(new Dimension(bSize,bSize));
+                panel.add(button);
+        	}
+        }
+        
+        
+        
+        JPanel container = new JPanel(new FlowLayout(FlowLayout.CENTER, 0,0));
+        container.add(panel);
+        JScrollPane scrollPane = new JScrollPane(container);
+        f.getContentPane().add(scrollPane);
+
+        f.pack();
+        f.setLocationRelativeTo(null);
+        f.setVisible(true);
+
 	}
 
 	
@@ -262,11 +375,14 @@ public class Main {
 		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")" + " Hardcorded");
 		
 		
-		
+		String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		int lettersI = 0;
 		//initialize with all unblocked cells and their g/h/f values
 		for(int y = 0; y < nRows; y++) {
 			for(int x = 0; x < nCols; x++) {
-				map[y][x] = new Cell('1');
+				map[y][x] = new Cell('1', new int[] {x, y});
+				//map[y][x].cName = letters.charAt(lettersI);
+				lettersI++;
 			}
 		}
 		//System.out.println("Unblocked cells generated");
@@ -390,6 +506,11 @@ public class Main {
 		
 
 		
+	}
+	
+	
+	public static Cell getCell( int x, int y) {
+		return map[y][x];
 	}
 	
 
