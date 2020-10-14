@@ -30,12 +30,17 @@ public class Cell {
 	}
 	
 	/*
-	* TODO:
+	* DONE
 	* Returns distance for hValue
 	* Not sure which distance calculation to use..
 	*/
 	private double calculateDistance(int[] from, int[] to) {
-		double distance = 0.0;
+		double distance;
+		int fx= from[0];
+		int fy= from[1];
+		int tx= to[0];
+		int ty= to[1];
+		distance = Math.abs(fx- tx) + Math.abs(fy - ty);
 		return distance;
 	}
 
