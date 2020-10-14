@@ -2,6 +2,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+/*
+ * Introduction to AI
+ * Assignment 1: Heuristic Search
+ * 
+ * Made by:
+ * Cindy Lin
+ * Amielyn Musa
+ * Sanidhi B
+ */
+
 
 public abstract class HeuristicSearch {
 
@@ -74,9 +84,7 @@ public abstract class HeuristicSearch {
 	 */
 	public ArrayList<Cell> search(){
 		ArrayList<Cell> path = new ArrayList<Cell>();
-
-		//TODO
-
+		//...
 		return path;
 	}
 

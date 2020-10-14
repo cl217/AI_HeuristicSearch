@@ -1,3 +1,13 @@
+/*
+ * Introduction to AI
+ * Assignment 1: Heuristic Search
+ * 
+ * Made by:
+ * Cindy Lin
+ * Amielyn Musa
+ * Sanidhi B
+ */
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -369,27 +379,27 @@ public class Main {
 		}
 		System.out.println("Start generated: " + "(" + start[0] + "," + start[1] + ")");
 		 
-		//TODO
+		/*
+			TODO - generate goal[] that is at least minGoalDistance away from start
+			The goal is currently hardcoded
+		*/
 		goal[0] = nCols - 2; 
 		goal[1] = nRows - 2;
 		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")" + " Hardcorded");
 		
 		
-		String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		int lettersI = 0;
-		//initialize with all unblocked cells and their g/h/f values
+
+		//initialize with all unblocked cells and their h value
 		for(int y = 0; y < nRows; y++) {
 			for(int x = 0; x < nCols; x++) {
 				map[y][x] = new Cell('1', new int[] {x, y});
-				//map[y][x].cName = letters.charAt(lettersI);
-				lettersI++;
 			}
 		}
 		//System.out.println("Unblocked cells generated");
 		
 		//select region around  random (x, y) for hard terrain 
 		for(int i = 0; i < nHardTerrainRegion; i++) {
-			//TODO: make sure (randX,randY) is not repeated
+			//TODO: make sure (randX,randY) is not repeated?
 			int randY = ThreadLocalRandom.current().nextInt(0, nRows);
 			int randX = ThreadLocalRandom.current().nextInt(0, nCols);
 			hardTerrainCenter.add(new int[] {randX, randY});

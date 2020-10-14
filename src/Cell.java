@@ -1,41 +1,41 @@
 import java.util.Arrays;
+/*
+ * Introduction to AI
+ * Assignment 1: Heuristic Search
+ * 
+ * Made by:
+ * Cindy Lin
+ * Amielyn Musa
+ * Sanidhi B
+ */
 
 public class Cell {
+
 	public char c;
 	
-	
-	public char cName;
-	
-	//Calculated using Manhattan Distance
+	//Calculated using Manhattan Distance? Diagonal Distance? other?
 	public double hValue; //how far away from end
-	public double gValue; //how far away from start
+	public double gValue; //cost of path away from start
 	public double fValue; //g+h
-	public boolean isGoal = false;
-	public boolean isStart = false;
 	int[] coordinate = new int[2];
 	
 	public Cell( double hValue ) {
 		this.hValue = hValue;
 	}
 	
-	public Cell( char c, int[] current) {
+	public Cell( char c, int[] coordinate) {
 		this.c = c;
-		this.coordinate = current;
-		if(Main.goal[0] == current[0] && Main.goal[1]== current[1]) {
-			isGoal = true;
-		}
-		if(Main.start[0] == current[0] && Main.start[1] == current[1]) {
-			System.out.println("start set: " + Arrays.toString(coordinate));
-			gValue = 0;
-			isStart = true;
-		}
-		
-		hValue = manhattanDistance(current, Main.goal);
+		this.coordinate = coordinate;		
+		hValue = calculateDistance(coordinate, Main.goal);
 	}
 	
-	private double manhattanDistance(int[] from, int[] to) {
-		int x1 = from[0], x2 = to[0], y1 = from[1], y2 = to[1];
-		double distance = Math.abs(x2-x1) + Math.abs(y2-y1);
+	/*
+	* TODO:
+	* Returns distance for hValue
+	* Not sure which distance calculation to use..
+	*/
+	private double calculateDistance(int[] from, int[] to) {
+		double distance = 0.0;
 		return distance;
 	}
 
