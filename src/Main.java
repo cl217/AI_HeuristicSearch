@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.*;
 
+
 public class Main {
 
 	
@@ -37,6 +38,7 @@ public class Main {
 	static final int minHighwayLength = 30; //100
 	static final int blockedCells = 10; //3840
 	static final int startWithin = 1; //20
+	static final int endWithin = 1; //20
 	static final int minGoalDistance = 100; //100
 	
 	/*
@@ -51,11 +53,13 @@ public class Main {
 	static Cell [][] map = new Cell[nRows][nCols];
 	static int[] start = new int[2]; // (x,y)
 	static int[] goal = new int[2];  // (x,y)
+
 	static double weight = -1;
 	
 	
 	/* TODO */
 	public static void shortestPath(int[] start, int[] goal) {
+		
 	}
 	
 	/** MAIN **/
@@ -63,8 +67,9 @@ public class Main {
 
 
 		initialize();
-
-
+		
+		//ArrayList<Cell> successors = HeuristicSearch.succ(map[start[0]][start[1]]);
+		
 		//TODO: HeuristicSearch search() function has to be implemented
 		HeuristicSearch uniformCostSearch = new UniformCostSearch();
 		ArrayList<Cell> uniformCostSearch_ShortestPath = uniformCostSearch.search();
@@ -158,6 +163,7 @@ public class Main {
 	          String line = sc.nextLine();
 	          for(int x = 0; x < line.length(); x++) {
 	        	  map[y][x] = new Cell(line.charAt(x), new int[] {x, y}) ;
+	        	  
 	          }
 	          y++;
 	        }
@@ -357,37 +363,6 @@ public class Main {
 	
 	public static void initialize(){
 		
-		//select start: 1-right, 2-left, 3-top, 4-bottom
-		int startSide = ThreadLocalRandom.current().nextInt(1, 5);
-		switch(startSide) {
-			case 1: //right
-				start[0] = ThreadLocalRandom.current().nextInt(0, startWithin);
-				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
-				break;
-			case 2: //left
-				start[0] = ThreadLocalRandom.current().nextInt(nCols-startWithin, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
-				break;
-			case 3: //top
-				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(0, startWithin);
-				break;
-			case 4: //bottom
-				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(nRows-startWithin, nRows);
-				break;
-		}
-		System.out.println("Start generated: " + "(" + start[0] + "," + start[1] + ")");
-		 
-		/*
-			TODO - generate goal[] that is at least minGoalDistance away from start
-			The goal is currently hardcoded
-		*/
-		goal[0] = nCols - 2; 
-		goal[1] = nRows - 2;
-		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")" + " Hardcorded");
-		
-		
 
 		//initialize with all unblocked cells and their h value
 		for(int y = 0; y < nRows; y++) {
@@ -510,8 +485,45 @@ public class Main {
 				nBlocked++;
 			}
 		}
+		
 		//System.out.println("Blocked cells generated");
 		
+		//select start: 1-right, 2-left, 3-top, 4-bottom
+		int startSide = ThreadLocalRandom.current().nextInt(1, 5);
+		switch(startSide) {
+			case 1: //right
+				start[0] = ThreadLocalRandom.current().nextInt(0, startWithin);
+				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+				break;
+			case 2: //left
+				start[0] = ThreadLocalRandom.current().nextInt(nCols-startWithin, nCols);
+				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+				break;
+			case 3: //top
+				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+				start[1] = ThreadLocalRandom.current().nextInt(0, startWithin);
+				break;
+			case 4: //bottom
+				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+				start[1] = ThreadLocalRandom.current().nextInt(nRows-startWithin, nRows);
+				break;
+		}
+		
+		System.out.println("Start generated: " + "(" + start[0] + "," + start[1] + ")");
+
+		/*
+			TODO - generate goal[] that is at least minGoalDistance away from start
+			The goal is currently hardcoded
+		*/
+		
+
+		goal[0] = nCols - 1; 
+		goal[1] = nRows - 1;
+		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")" + " Hardcorded");
+		
+		
+
+	        	
 		System.out.println("Map generated");
 		
 
@@ -519,9 +531,9 @@ public class Main {
 	}
 	
 	
-	public static Cell getCell( int x, int y) {
-		return map[y][x];
-	}
+	 static Cell getCell( int x, int y) {
+			return map[y][x];
+		}
+		
 	
-
-}
+	}
