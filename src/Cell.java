@@ -17,6 +17,7 @@ public class Cell {
 	public double hValue; //how far away from end
 	public double gValue; //cost of path away from start
 	public double fValue; //g+h
+	public double dis;
 	int[] coordinate = new int[2];
 	
 	public Cell( double hValue ) {
@@ -60,12 +61,10 @@ public class Cell {
 	}
 	
 	
-	
-	
-	public int y() {
-		return coordinate[1];
-	}
 	public int x() {
 		return coordinate[0];
+	}
+	public int y() {
+		return coordinate[1];
 	}
 }
