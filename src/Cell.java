@@ -41,10 +41,36 @@ public class Cell {
 		int fy= from[1];
 		int tx= to[0];
 		int ty= to[1];
-		distance = Math.abs(fx- tx) + Math.abs(fy - ty);
+		System.out.println("Select a Heuristic. 0:Manhattan 1:Euclidian 2:Chebyshev 3:Average of Euclidian & Manhattan 4:Manhattan/2");
+		int heuristic = Integer.parseInt(args[0]);
+		
+		if(heuristic==0) {
+			distance = Math.abs(fx- tx) + Math.abs(fy-ty);
+		}
+		else if(heuristic==1) {
+			distance= Math.sqrt((Math.pow(Math.abs(fx- tx),2) + Math.pow(Math.abs(fy - ty),2)));
+		}
+		else if(heuristic==2) {
+			int cx= Math.abs(fx- tx);
+			int cy= Math.abs(fy-ty);
+			if (cx>cy) {
+			distance= cx;
+			}
+			else {
+				distance= cy;
+			}
+		}
+		else if (heuristic==3) {
+			distance = ((Math.abs(fx- tx) + Math.abs(fy-ty))+(Math.sqrt((Math.pow(Math.abs(fx- tx),2) + Math.pow(Math.abs(fy - ty),2))))/2);
+		}
+		else if (heuristic==4) {
+			distance= (((Math.abs(fx- tx) + Math.abs(fy-ty))/2));
+		}
+		else {
+			System.out.println("Error");
+		}
 		return distance;
 	}
-
 	
 	
 	public double hValue() {
