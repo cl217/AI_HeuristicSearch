@@ -27,7 +27,7 @@ public class Cell {
 	public Cell( char c, int[] coordinate) {
 		this.c = c;
 		this.coordinate = coordinate;		
-		hValue = calculateDistance(coordinate, Main.goal);
+		hValue = calculateDistance(coordinate, Main.goal, Main.heuristic);
 	}
 	
 	/*
@@ -35,19 +35,19 @@ public class Cell {
 	* Returns distance for hValue
 	* Not sure which distance calculation to use..
 	*/
-	private double calculateDistance(int[] from, int[] to) {
-		double distance;
+	private double calculateDistance(int[] from, int[] to, int heuristic) {
+		double distance = -1;
 		int fx= from[0];
 		int fy= from[1];
 		int tx= to[0];
 		int ty= to[1];
-		System.out.println("Select a Heuristic. 0:Manhattan 1:Euclidian 2:Chebyshev 3:Average of Euclidian & Manhattan 4:Manhattan/2");
-		int heuristic = Integer.parseInt(args[0]);
+		//System.out.println("Select a Heuristic. 0:Manhattan 1:Euclidian 2:Chebyshev 3:Average of Euclidian & Manhattan 4:Manhattan/2");
+		//int heuristic = Integer.parseInt(args[0]);
 		
-		if(heuristic==0) {
+		if(heuristic==0) { //Manhattan
 			distance = Math.abs(fx- tx) + Math.abs(fy-ty);
 		}
-		else if(heuristic==1) {
+		else if(heuristic==1) { //Euclidian
 			distance= Math.sqrt((Math.pow(Math.abs(fx- tx),2) + Math.pow(Math.abs(fy - ty),2)));
 		}
 		else if(heuristic==2) {
@@ -60,10 +60,10 @@ public class Cell {
 				distance= cy;
 			}
 		}
-		else if (heuristic==3) {
+		else if (heuristic==3) { //Avg(Euclid+Manhattan)
 			distance = ((Math.abs(fx- tx) + Math.abs(fy-ty))+(Math.sqrt((Math.pow(Math.abs(fx- tx),2) + Math.pow(Math.abs(fy - ty),2))))/2);
 		}
-		else if (heuristic==4) {
+		else if (heuristic==4) { //Manhattan/2
 			distance= (((Math.abs(fx- tx) + Math.abs(fy-ty))/2));
 		}
 		else {

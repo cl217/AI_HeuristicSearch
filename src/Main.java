@@ -55,6 +55,8 @@ public class Main {
 	static int[] goal = new int[2];  // (x,y)
 
 	static double weight = -1;
+	static int heuristic = -1;
+	
 	
 	
 	/* TODO */
@@ -66,7 +68,11 @@ public class Main {
 	public static void main (String[] args) {
 
 
-		initialize();
+		
+		
+		
+		
+		
 		
 		//ArrayList<Cell> successors = HeuristicSearch.succ(map[start[0]][start[1]]);
 		
@@ -80,52 +86,11 @@ public class Main {
 		HeuristicSearch WeightedASearch = new WeightedASearch();
 		ArrayList<Cell> WeightedASearch_ShortestPath = WeightedASearch.search();
 		
-		
-		showGUI(uniformCostSearch_ShortestPath); //shows GUI with path highlighted
 
 
-
-		//outputToFile("C:\\Users\\Cindy\\Desktop\\mapoutput.txt");
-		
-
-		
-		
-		/*
-		Scanner in = new Scanner(System.in);
-		String input = "";
-		while( !input.equals("1") && !input.equals("2") ) {
-			System.out.println("Choose:\n (1) Generate \n (2) Load from file");
-			input = in.nextLine();
-		}
-		
-		if(input.equals("1")) {
-			initialize();
-		}else {
-			System.out.println("Enter file path:");
-			input = in.nextLine();
-			intializeFromFile(input);
-			//intializeFromFile("C:\\Users\\Cindy\\Desktop\\map.txt");
-		}
-		
-		
-		input = "";
-		while( !input.equals("1") && !input.equals("2") ) {
-			System.out.println("Choose:\n (1) Show GUI \n (2) Output to file");
-			input = in.nextLine();
-		}
-		
-		if(input.equals("1")) {
-			showGUI();
-		}else {
-			System.out.println("Enter file path:");
-			input = in.nextLine();
-			outputToFile(input);
-			//outputToFile("C:\\Users\\Cindy\\Desktop\\mapoutput.txt");
-		}
-		
-		in.close();
-		*/
-		
+		initialize();
+		GUI gui = new GUI(uniformCostSearch_ShortestPath);
+		gui.setVisible(true);
 		
 	}
 	
@@ -196,85 +161,7 @@ public class Main {
 		}
 	}
 	
-	public static void showGUI(ArrayList<Cell> path) {
-		int bSize = 30;
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(nRows, nCols));
-        
-        HashMap<JButton, Cell> buttonMap = new HashMap<JButton, Cell>();
-        for( int i = 0; i < nRows; i++ ) {
-        	for(int k = 0; k < nCols; k++ ) {
-        		String text = Character.toString(map[i][k].c);
-        		//String text = Double.toString(map[i][k].gValue);
-        		//String text = Character.toString(map[i][k].cName);
-        		
-                JButton button = new JButton(text);
-                buttonMap.put(button, map[i][k]);
-                button.setFont(new Font("Arial", Font.PLAIN, 10));
-                button.setMargin(new Insets(0, 0, 0, 0));
-                button.addActionListener(new ActionListener() {
-                	@Override
-                	public void actionPerformed(ActionEvent e) {
-                		Cell c = buttonMap.get(button);
-                		System.out.println("g(" + c.gValue  + "), h(" + c.hValue + "), f(" + c.fValue + ")");
-                	}
-                });
-                
-                if(i==start[1] && k == start[0] ) {
-                	button.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.RED, 3), 
-                            BorderFactory.createEmptyBorder(
-                                button.getBorder().getBorderInsets(button).top, 
-                                button.getBorder().getBorderInsets(button).left, 
-                                button.getBorder().getBorderInsets(button).bottom, 
-                                button.getBorder().getBorderInsets(button).right)));
-                }
-                
-                if(i==goal[1] && k == goal[0]) {
-                	button.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.BLUE, 3), 
-                            BorderFactory.createEmptyBorder(
-                                button.getBorder().getBorderInsets(button).top, 
-                                button.getBorder().getBorderInsets(button).left, 
-                                button.getBorder().getBorderInsets(button).bottom, 
-                                button.getBorder().getBorderInsets(button).right)));
-                }
-                
-                
-                switch(map[i][k].c) {
-                	case '0': button.setBackground(Color.BLACK); break; 
-                	case '1': button.setBackground(Color.GREEN); break;
-                	case '2': button.setBackground(new Color(0x994C00)); break;
-                	case 'a': button.setBackground(Color.LIGHT_GRAY); break;
-                	case 'b': button.setBackground(Color.GRAY); break;
-                }
-                
-                if(path.contains(map[i][k])) {
-                	button.setBackground(Color.YELLOW);
-                }
-                
-                
-                button.setPreferredSize(new Dimension(bSize,bSize));
-                panel.add(button);
-        	}
-        }
-        
-        
-        
-        JPanel container = new JPanel(new FlowLayout(FlowLayout.CENTER, 0,0));
-        container.add(panel);
-        JScrollPane scrollPane = new JScrollPane(container);
-        f.getContentPane().add(scrollPane);
 
-        f.pack();
-        f.setLocationRelativeTo(null);
-        f.setVisible(true);
-
-	}
-
-	
 	/** helper for makeHighway() */
 	
 	public static boolean isValidHighway(int x, int y, HashMap<Integer, ArrayList<Integer>> highwayPath ) {
