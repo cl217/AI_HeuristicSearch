@@ -29,14 +29,14 @@ import javax.swing.*;
 public class Main {
 
 	
-	static final int nRows = 30; //120
-	static final int nCols = 50; //160
-	static final int nHardTerrainRegion = 10; //8
+	static final int nRows = 5; //120
+	static final int nCols = 10; //160
+	static final int nHardTerrainRegion = 5; //8
 	static final int hardTerrainRegionSize = 2; //31
 	static final int nHighways = 2; //4
-	static final int highwayBlocks = 5; //20
-	static final int minHighwayLength = 30; //100
-	static final int blockedCells = 10; //3840
+	static final int highwayBlocks = 2; //20
+	static final int minHighwayLength = 5; //100
+	static final int blockedCells = 3; //3840
 	static final int startWithin = 1; //20
 	static final int endWithin = 1; //20
 	static final int minGoalDistance = 100; //100
@@ -50,19 +50,15 @@ public class Main {
 	*/
 	/** Generated or loaded from file */
 	static ArrayList<int[]> hardTerrainCenter = new ArrayList<int[]>();
-	static Cell [][] map = new Cell[nRows][nCols];
-	static int[] start = new int[2]; // (x,y)
-	static int[] goal = new int[2];  // (x,y)
+	public static Cell [][] map = new Cell[nRows][nCols];
+	public static int[] start = new int[2]; // (x,y)
+	public static int[] goal = new int[2];  // (x,y)
 
 	static double weight = -1;
 	static int heuristic = -1;
 	
 	
-	
-	/* TODO */
-	public static void shortestPath(int[] start, int[] goal) {
-		
-	}
+
 	
 	/** MAIN **/
 	public static void main (String[] args) {
@@ -89,7 +85,7 @@ public class Main {
 
 
 		initialize();
-		GUI gui = new GUI(uniformCostSearch_ShortestPath);
+		GUI gui = new GUI();
 		gui.setVisible(true);
 		
 	}
@@ -250,6 +246,11 @@ public class Main {
 	
 	public static void initialize(){
 		
+		hardTerrainCenter = new ArrayList<int[]>();
+		map = new Cell[nRows][nCols];
+		start = new int[2]; // (x,y)
+		goal = new int[2];  // (x,y)
+		
 
 		//initialize with all unblocked cells and their h value
 		for(int y = 0; y < nRows; y++) {
@@ -375,6 +376,19 @@ public class Main {
 		
 		//System.out.println("Blocked cells generated");
 		
+		newStartGoal();
+		
+		
+
+	        	
+		System.out.println("Map generated");
+		
+
+		
+	}
+	
+	public static void newStartGoal() {
+		
 		//select start: 1-right, 2-left, 3-top, 4-bottom
 		int startSide = ThreadLocalRandom.current().nextInt(1, 5);
 		switch(startSide) {
@@ -397,28 +411,18 @@ public class Main {
 		}
 		
 		System.out.println("Start generated: " + "(" + start[0] + "," + start[1] + ")");
-
+		
 		/*
 			TODO - generate goal[] that is at least minGoalDistance away from start
 			The goal is currently hardcoded
 		*/
 		
-
 		goal[0] = nCols - 1; 
 		goal[1] = nRows - 1;
 		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")" + " Hardcorded");
-		
-		
-
-	        	
-		System.out.println("Map generated");
-		
-
-		
 	}
 	
-	
-	 static Cell getCell( int x, int y) {
+	 public static Cell getCell( int x, int y) {
 			return map[y][x];
 		}
 		

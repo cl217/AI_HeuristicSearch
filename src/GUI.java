@@ -15,57 +15,50 @@ public class GUI extends javax.swing.JFrame{
     private final JPanel bottomPanel;    // container panel for the bottom
     private final JPanel topPanel;
     JScrollPane scrollPane;
+    JLabel infoLabel;
     
 	int nCols = Main.nCols;
 	int nRows = Main.nRows;
-	Cell[][] map = Main.map;
-	int[] start = Main.start;
-	int[] goal = Main.goal;
+	Cell[][] map;
+	int[] start;
+	int[] goal;
 	HashMap<JButton, Cell> buttonMap;
 	ArrayList<Cell> path;
 	JFrame jframe;
     
 
-    public GUI(ArrayList<Cell> path){
+    public GUI(){
     	
-
     	jframe = this;
     	
     	splitPane = new JSplitPane();
         topPanel = new JPanel();
 		bottomPanel = new JPanel();
 		
-		buttonMap = new HashMap<JButton, Cell>();
-		this.path = path;
+		setVars();
 		
 		topPanel();
         bottomPanel();
         
         
-        // now lets define the default size of our window and its layout:
-        setPreferredSize(new Dimension(400, 400));     // let's open the window with a default size of 400x400 pixels
-        // the contentPane is the container that holds all our components
-        getContentPane().setLayout(new GridLayout());  // the default GridLayout is like a grid with 1 column and 1 row,
-        // we only add one element to the window itself
-        getContentPane().add(splitPane);               // due to the GridLayout, our splitPane will now fill the whole window
+        setPreferredSize(new Dimension(1500, 1000)); 
+        getContentPane().setLayout(new GridLayout());  
+        getContentPane().add(splitPane);             
+        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); 
+        splitPane.setDividerLocation(800);                   
+        splitPane.setTopComponent(scrollPane);                  
+        splitPane.setBottomComponent(bottomPanel);           
 
-        // let's configure our splitPane:
-        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);  // we want it to split the window verticaly
-        splitPane.setDividerLocation(200);                    // the initial position of the divider is 200 (our window is 400 pixels high)
-        splitPane.setTopComponent(scrollPane);                  // at the top we want our "topPanel"
-        splitPane.setBottomComponent(bottomPanel);            // and at the bottom we want our "bottomPanel"
+        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS)); 
 
-        // our topPanel doesn't need anymore for this example. Whatever you want it to contain, you can add it here
-        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS)); // BoxLayout.Y_AXIS will arrange the content vertically
-
-
-
-        
-        
-        
-
-        
-        pack();   // calling pack() at the end, will ensure that every layout and size we just defined gets applied before the stuff becomes visible
+        pack();  
+    }
+    private void setVars() {
+		buttonMap = new HashMap<JButton, Cell>();
+		path = new ArrayList<Cell>();
+    	map = Main.map;
+    	start = Main.start;
+    	goal = Main.goal;
     }
     
     
@@ -91,9 +84,7 @@ public class GUI extends javax.swing.JFrame{
 		int bSize = 30;
         for( int i = 0; i < nRows; i++ ) {
         	for(int k = 0; k < nCols; k++ ) {
-        		String text = Character.toString(Main.map[i][k].c);
-        		//String text = Double.toString(map[i][k].gValue);
-        		//String text = Character.toString(map[i][k].cName);
+        		String text = Character.toString(map[i][k].c);
         		
         		JButton button;
         		if(p==0) {
@@ -104,23 +95,29 @@ public class GUI extends javax.swing.JFrame{
 	                	@Override
 	                	public void actionPerformed(ActionEvent e) {
 	                		Cell c = buttonMap.get(button);
-	                		System.out.println("g(" + c.gValue  + "), h(" + c.hValue + "), f(" + c.fValue + ")");
+	                		infoLabel.setText("Selected Cell: terrain(" + c.c + ") g(" + c.gValue  + "), h(" + c.hValue + "), f(" + c.fValue + ")");
 	                	}
 	                });
         		}else {
         			button =(JButton) topPanel.getComponent(k+(i*nCols));
         			button.setText(text);
-        			button.setBorderPainted(false);
         		}
                 
-                
+        		button.setBorder(BorderFactory.createEmptyBorder());
+               	button.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.WHITE, 1), 
+                        BorderFactory.createEmptyBorder(
+                            button.getBorder().getBorderInsets(button).top, 
+                            button.getBorder().getBorderInsets(button).left, 
+                            button.getBorder().getBorderInsets(button).bottom, 
+                            button.getBorder().getBorderInsets(button).right)));
                 
                 buttonMap.put(button, map[i][k]);
 
                 
                 if(i==start[1] && k == start[0] ) {
                 	button.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.RED, 3), 
+                            BorderFactory.createLineBorder(Color.RED, 5), 
                             BorderFactory.createEmptyBorder(
                                 button.getBorder().getBorderInsets(button).top, 
                                 button.getBorder().getBorderInsets(button).left, 
@@ -130,7 +127,7 @@ public class GUI extends javax.swing.JFrame{
                 
                 if(i==goal[1] && k == goal[0]) {
                 	button.setBorder(BorderFactory.createCompoundBorder(
-                            BorderFactory.createLineBorder(Color.BLUE, 3), 
+                            BorderFactory.createLineBorder(Color.BLUE, 5), 
                             BorderFactory.createEmptyBorder(
                                 button.getBorder().getBorderInsets(button).top, 
                                 button.getBorder().getBorderInsets(button).left, 
@@ -147,21 +144,15 @@ public class GUI extends javax.swing.JFrame{
                 	case 'b': button.setBackground(Color.GRAY); break;
                 }
                 
-                
-                button.setPreferredSize(new Dimension(bSize,bSize));
-                topPanel.add(button);
+                if(p==0) {
+                    button.setPreferredSize(new Dimension(bSize,bSize));
+                	topPanel.add(button);
+                }
         	}
         }
         
     }
        
-    
-    public void resetVars() {
-    	map = Main.map;
-    	goal = Main.goal;
-    	start = Main.start;
-    	newMap(1);
-    }
     
     private void topPanel() {
 
@@ -180,6 +171,14 @@ public class GUI extends javax.swing.JFrame{
 		
 		Box verticalBox = Box.createVerticalBox();
 		bottomPanel.add(verticalBox);
+		
+		
+		Box horizontalBox0 = Box.createHorizontalBox();
+		verticalBox.add(horizontalBox0);
+		infoLabel = new JLabel("Selected Cell: (No cell selected)");
+		infoLabel.setForeground(Color.RED);
+		horizontalBox0.add(infoLabel);
+		
 		
 		Box horizontalBox = Box.createHorizontalBox();
 		verticalBox.add(horizontalBox);
@@ -248,8 +247,9 @@ public class GUI extends javax.swing.JFrame{
 		btnNew.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {		    	
-		    	//Main.initialize();
-		    	//resetVars();
+		    	Main.initialize();
+		    	setVars();
+		    	newMap(1);
 		    }
 		});
 		
@@ -265,15 +265,66 @@ public class GUI extends javax.swing.JFrame{
 			   	if (result == JFileChooser.APPROVE_OPTION) {
 			   	    File selectedFile = fileChooser.getSelectedFile();
 			   	    Main.intializeFromFile(selectedFile.getAbsolutePath());
-			   	    //resetVars();
+			   	    setVars();
+			   	    newMap(1);
 			   	}
 		    }
 		});
 		
 		
-		//TODO
 		JButton btnNewSG = new JButton("New start/goal");
 		verticalBox_1.add(btnNewSG);
+		btnNewSG.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent e) {	
+		    	
+		    	
+		    	JButton button = (JButton) topPanel.getComponent(start[0] + start[1] *nCols);
+        		button.setBorder(BorderFactory.createEmptyBorder());
+               	button.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.WHITE, 1), 
+                        BorderFactory.createEmptyBorder(
+                            button.getBorder().getBorderInsets(button).top, 
+                            button.getBorder().getBorderInsets(button).left, 
+                            button.getBorder().getBorderInsets(button).bottom, 
+                            button.getBorder().getBorderInsets(button).right)));
+               	
+		    	button = (JButton) topPanel.getComponent(goal[0] + goal[1] *nCols);
+        		button.setBorder(BorderFactory.createEmptyBorder());
+               	button.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.WHITE, 1), 
+                        BorderFactory.createEmptyBorder(
+                            button.getBorder().getBorderInsets(button).top, 
+                            button.getBorder().getBorderInsets(button).left, 
+                            button.getBorder().getBorderInsets(button).bottom, 
+                            button.getBorder().getBorderInsets(button).right)));
+               	
+		    	Main.newStartGoal();
+		    	start = Main.start;
+               	
+		    	System.out.println("304: " + Main.start[0] + ", " + Main.start[1]);
+		    	button = (JButton) topPanel.getComponent(start[0] + start[1] *nCols);
+        		button.setBorder(BorderFactory.createEmptyBorder());
+                button.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(Color.RED, 5), 
+                         BorderFactory.createEmptyBorder(
+                                button.getBorder().getBorderInsets(button).top, 
+                                button.getBorder().getBorderInsets(button).left, 
+                                button.getBorder().getBorderInsets(button).bottom, 
+                                button.getBorder().getBorderInsets(button).right)));
+                
+		    	button = (JButton) topPanel.getComponent(goal[0] + goal[1] *nCols);
+        		button.setBorder(BorderFactory.createEmptyBorder());
+                button.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createLineBorder(Color.BLUE, 5), 
+                            BorderFactory.createEmptyBorder(
+                                button.getBorder().getBorderInsets(button).top, 
+                                button.getBorder().getBorderInsets(button).left, 
+                                button.getBorder().getBorderInsets(button).bottom, 
+                                button.getBorder().getBorderInsets(button).right)));
+		    }
+		});
+		
 				
 		JButton btnSave = new JButton("Save map");
 		btnSave.addActionListener(new ActionListener() {
@@ -289,12 +340,6 @@ public class GUI extends javax.swing.JFrame{
 		    }
 		});
 		verticalBox_1.add(btnSave);
-		
-
-		
-		
-		
-		
 		
 		Component horizontalStrut_3 = Box.createHorizontalStrut(20);
 		verticalBox_1.add(horizontalStrut_3);
