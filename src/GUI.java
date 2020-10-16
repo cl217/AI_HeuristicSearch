@@ -432,8 +432,16 @@ public class GUI extends javax.swing.JFrame{
 		    	if(s2.isSelected()) {
 		    		search = new A_Search();
 		    	}
+		    	
 		    	if(s3.isSelected()) {
-		    		search = new WeightedASearch();
+		    		try {
+		    			double weight = Double.parseDouble(textW.getText());
+				    	Main.weight = weight;
+			    		search = new WeightedASearch(weight);
+		    		}catch(NumberFormatException ex) {
+		    			JOptionPane.showMessageDialog(jframe, "Enter valid weight");
+		    			return;
+		    		}
 		    	}
 		    	if(s4.isSelected()) {
 		    		//sequentialsearch

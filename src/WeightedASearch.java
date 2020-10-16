@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 
 public class WeightedASearch extends HeuristicSearch{
 	
-	public WeightedASearch(){
+	public WeightedASearch(double weight){
 		//pops lowest weighted A first
 		queue = new PriorityQueue<Cell>(5, Comparator.comparing(Cell::weightedA));
 	}

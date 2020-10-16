@@ -79,7 +79,7 @@ public class Main {
 		HeuristicSearch aSearch = new A_Search();
 		ArrayList<Cell> aSearch_ShortestPath = aSearch.search();
 
-		HeuristicSearch WeightedASearch = new WeightedASearch();
+		HeuristicSearch WeightedASearch = new WeightedASearch(weight);
 		ArrayList<Cell> WeightedASearch_ShortestPath = WeightedASearch.search();
 		
 
