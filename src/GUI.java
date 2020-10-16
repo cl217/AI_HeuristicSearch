@@ -436,7 +436,6 @@ public class GUI extends javax.swing.JFrame{
 		    	if(s3.isSelected()) {
 		    		try {
 		    			double weight = Double.parseDouble(textW.getText());
-				    	Main.weight = weight;
 			    		search = new WeightedASearch(weight);
 		    		}catch(NumberFormatException ex) {
 		    			JOptionPane.showMessageDialog(jframe, "Enter valid weight");
