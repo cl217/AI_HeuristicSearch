@@ -1,7 +1,7 @@
 # CS440-Assignment1 Report
 **Optimizations:**
 
-We optimized our algorhythms by using various data structures, calculating h, g, and ƒ values, 
+The purpose of optimization is to achieve the best, most efficient design. Adhereing to the criteria and constraints outlined by the assignment, we optimized our algorhythms by using various data structures, calculating h, g, and ƒ values, and testing our project as we worked on it. We considered factors such as productivity, runtime, efficacy, space, and more. 
 
 **Proposed Heuristics:**
 
@@ -15,5 +15,9 @@ Inadmissible heuristics:
 4. Manhattan/2 - Rough estimate which is an okay starting place.
 
 **Experimental Results:** 
-(5-9)
+(5) 
+(6)
+(7)
+(8)
+(9)
 
