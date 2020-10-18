@@ -15,8 +15,11 @@ public class WeightedASearch extends HeuristicSearch{
 	
 	public WeightedASearch(double weight){
 		//pops lowest weighted A first
+		resetValues();
+		setHValue();
 		Main.weight = weight;
 		queue = new PriorityQueue<Cell>(5, Comparator.comparing(Cell::weightedA));
 	}
+	
 
 }

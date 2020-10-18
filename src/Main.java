@@ -29,9 +29,9 @@ import javax.swing.*;
 public class Main {
 
 	
-	static final int nRows = 5; //120
-	static final int nCols = 10; //160
-	static final int nHardTerrainRegion = 5; //8
+	static final int nRows = 7; //120
+	static final int nCols = 6; //160
+	static final int nHardTerrainRegion = 1; //8
 	static final int hardTerrainRegionSize = 2; //31
 	static final int nHighways = 2; //4
 	static final int highwayBlocks = 2; //20
@@ -39,7 +39,7 @@ public class Main {
 	static final int blockedCells = 3; //3840
 	static final int startWithin = 1; //20
 	static final int endWithin = 1; //20
-	static final int minGoalDistance = 100; //100
+	static final int minGoalDistance = 5; //100
 	
 	/*
 	 	Use �0� to indicate a blocked cell
@@ -63,40 +63,10 @@ public class Main {
 	/** MAIN **/
 	public static void main (String[] args) {
 
-
-		
-		
-		
-		
-		
-		
-		//ArrayList<Cell> successors = HeuristicSearch.succ(map[start[0]][start[1]]);
-		
-		//TODO: HeuristicSearch search() function has to be implemented
-		HeuristicSearch uniformCostSearch = new UniformCostSearch();
-		ArrayList<Cell> uniformCostSearch_ShortestPath = uniformCostSearch.search();
-
-		HeuristicSearch aSearch = new A_Search();
-		ArrayList<Cell> aSearch_ShortestPath = aSearch.search();
-
-		HeuristicSearch WeightedASearch = new WeightedASearch(weight);
-		ArrayList<Cell> WeightedASearch_ShortestPath = WeightedASearch.search();
-		
-
-
-		initialize();
 		GUI gui = new GUI();
 		gui.setVisible(true);
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	/* Done: Description - Page 3 of PDF */
@@ -390,41 +360,56 @@ public class Main {
 	public static void newStartGoal() {
 		
 		//select start: 1-right, 2-left, 3-top, 4-bottom
-		int startSide = ThreadLocalRandom.current().nextInt(1, 5);
-		switch(startSide) {
-			case 1: //right
-				start[0] = ThreadLocalRandom.current().nextInt(0, startWithin);
-				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
-				break;
-			case 2: //left
-				start[0] = ThreadLocalRandom.current().nextInt(nCols-startWithin, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
-				break;
-			case 3: //top
-				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(0, startWithin);
-				break;
-			case 4: //bottom
-				start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
-				start[1] = ThreadLocalRandom.current().nextInt(nRows-startWithin, nRows);
-				break;
-		}
-		
+		do {
+			int startSide = ThreadLocalRandom.current().nextInt(1, 5);
+			switch(startSide) {
+				case 1: //right
+					start[0] = ThreadLocalRandom.current().nextInt(0, startWithin);
+					start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+					break;
+				case 2: //left
+					start[0] = ThreadLocalRandom.current().nextInt(nCols-startWithin, nCols);
+					start[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+					break;
+				case 3: //top
+					start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+					start[1] = ThreadLocalRandom.current().nextInt(0, startWithin);
+					break;
+				case 4: //bottom
+					start[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+					start[1] = ThreadLocalRandom.current().nextInt(nRows-startWithin, nRows);
+					break;
+			}
+		}while(getCell(start[0], start[1]).c == '0'); //make sure start is not blocked
 		System.out.println("Start generated: " + "(" + start[0] + "," + start[1] + ")");
 		
-		/*
-			TODO - generate goal[] that is at least minGoalDistance away from start
-			The goal is currently hardcoded
-		*/
 		
-		goal[0] = nCols - 1; 
-		goal[1] = nRows - 1;
-		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")" + " Hardcorded");
+		//select goal: 1-right, 2-left, 3-top, 4-bottom
+		do {
+			int goalSide = ThreadLocalRandom.current().nextInt(1, 5);
+			switch(goalSide) {
+				case 1: //right
+					goal[0] = ThreadLocalRandom.current().nextInt(0, startWithin);
+					goal[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+					break;
+				case 2: //left
+					goal[0] = ThreadLocalRandom.current().nextInt(nCols-startWithin, nCols);
+					goal[1] = ThreadLocalRandom.current().nextInt(0, nRows);
+					break;
+				case 3: //top
+					goal[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+					goal[1] = ThreadLocalRandom.current().nextInt(0, startWithin);
+					break;
+				case 4: //bottom
+					goal[0] = ThreadLocalRandom.current().nextInt(0, nCols);
+					goal[1] = ThreadLocalRandom.current().nextInt(nRows-startWithin, nRows);
+					break;
+			}
+		}while(getCell(goal[0], goal[1]).c == '0' || getCell(goal[0], goal[1]).calculateDistanceTo(start) < minGoalDistance); //make sure start is not blocked
+		System.out.println("Goal generated: " + "(" + goal[0] + "," + goal[1] + ")");
 	}
 	
 	 public static Cell getCell( int x, int y) {
 			return map[y][x];
-		}
-		
-	
-	}
+	 }	
+}

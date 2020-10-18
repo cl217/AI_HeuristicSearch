@@ -17,6 +17,9 @@ import java.util.PriorityQueue;
 public abstract class HeuristicSearch {
 
 	PriorityQueue<Cell> queue; 
+	public int runtime = 0;
+	public int memory = 0;
+	public long time = 0;
 	
 	/* Page 2 of PDF
  	- The cost of transitioning between two regular unblocked cells is 1 if the agent moves horizontally or vertically and sqrt(2) if the agent moves diagonally. 
@@ -83,73 +86,130 @@ public abstract class HeuristicSearch {
 	 * @return ArrayList of Cells = path from start to end
 	 */
 	public ArrayList<Cell> search(){
-		ArrayList<Cell> path = new ArrayList<Cell>();
+		long startTime = System.currentTimeMillis();
+		
+		HashMap<Cell, Cell> parent = new HashMap<Cell, Cell>();
 		ArrayList<Cell> visited = new ArrayList<Cell>();
+		ArrayList<Cell> path = new ArrayList<Cell>();
 		
-		Cell start = new Cell('S', Main.start);
+		queue.add(Main.getCell(Main.start[0], Main.start[1]));
+		memory++;
 		
-		path.add(start);
+		while(queue.size() > 0) {
+
+			Cell c = queue.poll();
+			visited.add(c);
+			memory++;
+			
+			if( isGoal(c) ) {
+				path.add(c);
+				memory++;
+				Cell backtrack = parent.get(c);
+
+				do{
+					path.add(backtrack);
+					memory++;
+					backtrack = parent.get(backtrack);
+				}while(!isStart(backtrack));
+				path.add(backtrack);
+				memory++;
+				break;
+			}
+			
+			ArrayList<Cell> succ = succ(c);
+			for(Cell c2 : succ) {
+				if( !visited.contains(c2) && c2.c != '0' ) {
+					if(queue.contains(c2)) {
+						double oldTcost = c2.gValue; //save old tCost
+						c2.gValue = c2.gValue - parent.get(c2).gValue; //Set to default value
+						double newTcost = c.gValue + getTransitionCost(c, c2); //get new tCost
+						if(newTcost < oldTcost) { //if new cost < oldcost
+							c2.gValue = newTcost; //update cost
+							c2.fValue = c2.gValue + c2.fValue;
+							parent.put(c2, c); //update parent
+						}else {
+							c2.gValue = oldTcost;
+						}
+					}else {
+						c2.gValue = c.gValue + getTransitionCost(c, c2);
+						c2.fValue = c2.gValue+c2.hValue;
+						queue.add(c2);
+						memory++;
+						parent.put(c2, c);
+						memory++;
+					}
+				}
+				runtime++;
+			}
+		}
 		
-		Cell goal = new Cell('G', Main.goal);
+		time = System.currentTimeMillis() - startTime;
+		
 		
 		return path;
 	}
 	
 	//Max possible vertices is 8 (PDF 3)
-	public static ArrayList<Cell> succ(Cell s) {
+	public static ArrayList<Cell> succ(Cell c) {
 		
-				ArrayList<Cell> successors = new ArrayList<Cell>();
-		
-				int x1 = s.coordinate[0];
-				int y1 = s.coordinate[1];
+		ArrayList<Cell> successors = new ArrayList<Cell>();
 				
-				
-				int maxEdges = 8;
-				
-				//BROKEN <-- have to make sure Cells are not out of bounds first
-				
-				Cell n1 = new Cell(Main.map[x1 - 1][y1 + 1].c, new int[] {x1 - 1, y1+1});						
-				Cell n2 = new Cell(Main.map[x1 - 1][y1].c, new int[] {x1 - 1, y1});
-				Cell n3 = new Cell(Main.map[x1 - 1][y1 - 1].c, new int[] {x1 - 1, y1 - 1});
-				Cell n4 = new Cell(Main.map[x1][y1 + 1].c, new int[] {x1, y1 + 1});
-				Cell n5 = new Cell(Main.map[x1][y1 - 1].c, new int[] {x1, y1 - 1});
-				Cell n6 = new Cell(Main.map[x1 + 1][y1 + 1].c, new int[] {x1 + 1, y1 + 1});
-				Cell n7 = new Cell(Main.map[x1 + 1][y1].c, new int[] {x1 + 1, y1});
-				Cell n8 = new Cell(Main.map[x1 + 1][y1 - 1].c, new int[] {x1 + 1, y1 - 1});
-				
-				System.out.print("Neighbor 1: (" + n1.x() + "," + n1.y() + ")" );
-				System.out.print("Neighbor 2: (" + n2.x() + "," + n2.y() + ")" );				
-				System.out.print("Neighbor 3: (" + n3.x() + "," + n3.y() + ")" );
-				System.out.print("Neighbor 4: (" + n4.x() + "," + n4.y() + ")" );
-				System.out.print("Neighbor 5: (" + n5.x() + "," + n5.y() + ")" );
-				System.out.print("Neighbor 6: (" + n6.x() + "," + n6.y() + ")" );
-				System.out.print("Neighbor 7: (" + n7.x() + "," + n7.y() + ")" );
-				System.out.print("Neighbor 8: (" + n8.x() + "," + n8.y() + ")" );
-				
-				successors.add(n1);
-				successors.add(n2);
-				successors.add(n3);
-				successors.add(n4);
-				successors.add(n5);
-				successors.add(n6);
-				successors.add(n7);
-				successors.add(n8);
-				
-				for(int i = 0; i < maxEdges; i++) {
-					
-					if(successors.get(i).c == 'b' || successors.get(i).x() == -1  || successors.get(i).y() == -1
-							|| successors.get(i).x() == 50 || successors.get(i).y() == 30) {
-						
-						successors.remove(i);
-					}
-					
-					
+		for(int y = c.y()-1; y<=c.y()+1; y++) {
+			for(int x = c.x()-1; x<=c.x()+1; x++ ) {
+				if( (y==c.y() && x==c.x()) || y < 0 || x < 0 || y > Main.nRows-1 || x > Main.nCols-1 ) {
+					//System.out.println("("+x+", "+y+") skipped");
+					continue;
 				}
-				
-				
-				return successors;
+				Cell c2 = Main.getCell(x, y);
+				successors.add(c2);
+			}
+		}
+		return successors;
+	}
+	
+	
+	private boolean isGoal(Cell c) {
+		if(c.x() == Main.goal[0] && c.y() == Main.goal[1]) {
+			return true;
+		}
+		return false;
+	}
+	private boolean isStart(Cell c) {
+		if(c.x() == Main.start[0] && c.y() == Main.start[1]) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static void resetValues() {
+		for(int y = 0; y < Main.nRows; y++) {
+			for(int x = 0; x < Main.nCols; x++) {
+				Main.map[y][x].gValue = 0;
+				Main.map[y][x].hValue = 0;
+				Main.map[y][x].fValue = 0;
+			}
+		}
+	}
+	
+	public static void setHValue() {
+		for(int y = 0; y < Main.nRows; y++) {
+			for(int x = 0; x < Main.nCols; x++) {
+				Cell c = Main.getCell(x, y);
+				c.hValue = c.calculateDistanceTo(Main.getCell(Main.goal[0], Main.goal[1]).coordinate);
+			}
+		}
+	}
+	
+	
+	public long getTime() {
+		return time;
+	}
+	public int getRuntime() {
+		return runtime;
+	}
+	public int getMemory() {
+		return memory;
 	}
 
-//|| n[i][1] == -1 || n[i][0] == 50 || n[i][1] == 30
 }
 	

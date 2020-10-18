@@ -17,17 +17,13 @@ public class GUI extends javax.swing.JFrame{
     JScrollPane scrollPane;
     JLabel infoLabel;
     
-	int nCols = Main.nCols;
-	int nRows = Main.nRows;
-	Cell[][] map;
-	int[] start;
-	int[] goal;
 	HashMap<JButton, Cell> buttonMap;
 	ArrayList<Cell> path;
 	JFrame jframe;
-    
+    boolean isFirst;
 
     public GUI(){
+    	isFirst =  true;
     	
     	jframe = this;
     	
@@ -45,7 +41,7 @@ public class GUI extends javax.swing.JFrame{
         getContentPane().setLayout(new GridLayout());  
         getContentPane().add(splitPane);             
         splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); 
-        splitPane.setDividerLocation(800);                   
+        splitPane.setDividerLocation(700);                   
         splitPane.setTopComponent(scrollPane);                  
         splitPane.setBottomComponent(bottomPanel);           
 
@@ -53,12 +49,10 @@ public class GUI extends javax.swing.JFrame{
 
         pack();  
     }
+    
     private void setVars() {
 		buttonMap = new HashMap<JButton, Cell>();
 		path = new ArrayList<Cell>();
-    	map = Main.map;
-    	start = Main.start;
-    	goal = Main.goal;
     }
     
     
@@ -79,15 +73,15 @@ public class GUI extends javax.swing.JFrame{
     }
     
     
-    private void newMap(int p) {
+    private void newMap() {
     	buttonMap.clear();
 		int bSize = 30;
-        for( int i = 0; i < nRows; i++ ) {
-        	for(int k = 0; k < nCols; k++ ) {
-        		String text = Character.toString(map[i][k].c);
+        for( int i = 0; i < Main.nRows; i++ ) {
+        	for(int k = 0; k < Main.nCols; k++ ) {
+        		String text = Character.toString(Main.map[i][k].c);
         		
         		JButton button;
-        		if(p==0) {
+        		if(isFirst) {
 	                button = new JButton(text);
 	                button.setFont(new Font("Arial", Font.PLAIN, 10));
 	                button.setMargin(new Insets(0, 0, 0, 0));
@@ -99,7 +93,7 @@ public class GUI extends javax.swing.JFrame{
 	                	}
 	                });
         		}else {
-        			button =(JButton) topPanel.getComponent(k+(i*nCols));
+        			button =(JButton) topPanel.getComponent(k+(i*Main.nCols));
         			button.setText(text);
         		}
                 
@@ -112,10 +106,10 @@ public class GUI extends javax.swing.JFrame{
                             button.getBorder().getBorderInsets(button).bottom, 
                             button.getBorder().getBorderInsets(button).right)));
                 
-                buttonMap.put(button, map[i][k]);
+                buttonMap.put(button, Main.map[i][k]);
 
                 
-                if(i==start[1] && k == start[0] ) {
+                if(i==Main.start[1] && k == Main.start[0] ) {
                 	button.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(Color.RED, 5), 
                             BorderFactory.createEmptyBorder(
@@ -125,7 +119,7 @@ public class GUI extends javax.swing.JFrame{
                                 button.getBorder().getBorderInsets(button).right)));
                 }
                 
-                if(i==goal[1] && k == goal[0]) {
+                if(i==Main.goal[1] && k == Main.goal[0]) {
                 	button.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(Color.BLUE, 5), 
                             BorderFactory.createEmptyBorder(
@@ -136,7 +130,7 @@ public class GUI extends javax.swing.JFrame{
                 }
                 
                 
-                switch(map[i][k].c) {
+                switch(Main.map[i][k].c) {
                 	case '0': button.setBackground(Color.BLACK); break; 
                 	case '1': button.setBackground(Color.GREEN); break;
                 	case '2': button.setBackground(new Color(0x994C00)); break;
@@ -144,20 +138,21 @@ public class GUI extends javax.swing.JFrame{
                 	case 'b': button.setBackground(Color.GRAY); break;
                 }
                 
-                if(p==0) {
+                if(isFirst) {
                     button.setPreferredSize(new Dimension(bSize,bSize));
                 	topPanel.add(button);
                 }
         	}
         }
-        
+        isFirst = false;
+        jframe.revalidate();
+        jframe.repaint();
     }
        
     
     private void topPanel() {
 
-        topPanel.setLayout(new GridLayout(nRows, nCols));
-        newMap(0);
+        topPanel.setLayout(new GridLayout(Main.nRows, Main.nCols));
         JPanel container = new JPanel(new FlowLayout(FlowLayout.CENTER, 0,0));
         container.add(topPanel);
         scrollPane = new JScrollPane(container);
@@ -171,6 +166,13 @@ public class GUI extends javax.swing.JFrame{
 		
 		Box verticalBox = Box.createVerticalBox();
 		bottomPanel.add(verticalBox);
+		
+		
+		Box horizontalBoxStats = Box.createHorizontalBox();
+		verticalBox.add(horizontalBoxStats);
+		JLabel infoLabel0 = new JLabel("Time: -- , Runtime: -- , Memory --");
+		infoLabel0.setForeground(Color.RED);
+		horizontalBoxStats.add(infoLabel0);
 		
 		
 		Box horizontalBox0 = Box.createHorizontalBox();
@@ -249,7 +251,7 @@ public class GUI extends javax.swing.JFrame{
 		    public void actionPerformed(ActionEvent e) {		    	
 		    	Main.initialize();
 		    	setVars();
-		    	newMap(1);
+		    	newMap();
 		    }
 		});
 		
@@ -266,7 +268,7 @@ public class GUI extends javax.swing.JFrame{
 			   	    File selectedFile = fileChooser.getSelectedFile();
 			   	    Main.intializeFromFile(selectedFile.getAbsolutePath());
 			   	    setVars();
-			   	    newMap(1);
+			   	    newMap();
 			   	}
 		    }
 		});
@@ -279,7 +281,7 @@ public class GUI extends javax.swing.JFrame{
 		    public void actionPerformed(ActionEvent e) {	
 		    	
 		    	
-		    	JButton button = (JButton) topPanel.getComponent(start[0] + start[1] *nCols);
+		    	JButton button = (JButton) topPanel.getComponent(Main.start[0] + Main.start[1] * Main.nCols);
         		button.setBorder(BorderFactory.createEmptyBorder());
                	button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.WHITE, 1), 
@@ -289,7 +291,7 @@ public class GUI extends javax.swing.JFrame{
                             button.getBorder().getBorderInsets(button).bottom, 
                             button.getBorder().getBorderInsets(button).right)));
                	
-		    	button = (JButton) topPanel.getComponent(goal[0] + goal[1] *nCols);
+		    	button = (JButton) topPanel.getComponent(Main.goal[0] + Main.goal[1] * Main.nCols);
         		button.setBorder(BorderFactory.createEmptyBorder());
                	button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.WHITE, 1), 
@@ -300,10 +302,9 @@ public class GUI extends javax.swing.JFrame{
                             button.getBorder().getBorderInsets(button).right)));
                	
 		    	Main.newStartGoal();
-		    	start = Main.start;
                	
 		    	System.out.println("304: " + Main.start[0] + ", " + Main.start[1]);
-		    	button = (JButton) topPanel.getComponent(start[0] + start[1] *nCols);
+		    	button = (JButton) topPanel.getComponent(Main.start[0] + Main.start[1] *Main.nCols);
         		button.setBorder(BorderFactory.createEmptyBorder());
                 button.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(Color.RED, 5), 
@@ -313,7 +314,7 @@ public class GUI extends javax.swing.JFrame{
                                 button.getBorder().getBorderInsets(button).bottom, 
                                 button.getBorder().getBorderInsets(button).right)));
                 
-		    	button = (JButton) topPanel.getComponent(goal[0] + goal[1] *nCols);
+		    	button = (JButton) topPanel.getComponent(Main.goal[0] + Main.goal[1] *Main.nCols);
         		button.setBorder(BorderFactory.createEmptyBorder());
                 button.setBorder(BorderFactory.createCompoundBorder(
                             BorderFactory.createLineBorder(Color.BLUE, 5), 
@@ -350,11 +351,52 @@ public class GUI extends javax.swing.JFrame{
 		JLabel lblNewLabel_2 = new JLabel("Select heuristic");
 		verticalBox_2.add(lblNewLabel_2);
 		
-		JRadioButton h1 = new JRadioButton("Manhattan distance");
+		JRadioButton h1 = new JRadioButton("Manhattan");
 		verticalBox_2.add(h1);
+		h1.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	Main.heuristic = 1;
+	        }
+	    });
 		
-		JRadioButton h2 = new JRadioButton("New radio button");
+		JRadioButton h2 = new JRadioButton("Euclidean");
 		verticalBox_2.add(h2);
+		h2.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	Main.heuristic = 2;
+	        }
+	    });
+		
+		
+		JRadioButton h3 = new JRadioButton("Chebyshev");
+		verticalBox_2.add(h3);
+		h3.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	Main.heuristic = 3;
+	        }
+	    });
+		
+		JRadioButton h4 = new JRadioButton("Avg(Manhattan+Euclidean)");
+		verticalBox_2.add(h4);
+		h4.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	Main.heuristic = 4;
+	        }
+	    });
+		
+		JRadioButton h5 = new JRadioButton("Manhattan/2");
+		verticalBox_2.add(h5);
+		h5.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	        	Main.heuristic = 5;
+	        }
+	    });
+		
 		
 		Component horizontalStrut_1 = Box.createHorizontalStrut(20);
 		verticalBox_2.add(horizontalStrut_1);
@@ -365,6 +407,9 @@ public class GUI extends javax.swing.JFrame{
 		ButtonGroup hGroup = new ButtonGroup();
 		hGroup.add(h1);
 		hGroup.add(h2);
+		hGroup.add(h3);
+		hGroup.add(h4);
+		hGroup.add(h5);
 		
 		
 		
@@ -377,7 +422,7 @@ public class GUI extends javax.swing.JFrame{
 		JRadioButton s2 = new JRadioButton("A*");
 		verticalBox_3.add(s2);
 		
-		JRadioButton s3 = new JRadioButton("A* Weighted");
+		JRadioButton s3 = new JRadioButton("A* Weighted (w1)");
 		verticalBox_3.add(s3);
 		
 		JRadioButton s4 = new JRadioButton("Sequential A*");
@@ -399,13 +444,24 @@ public class GUI extends javax.swing.JFrame{
 		Box horizontalBox_2 = Box.createHorizontalBox();
 		verticalBox_4.add(horizontalBox_2);
 		
-		JLabel lblNewLabel_3 = new JLabel("w = ");
+		
+		
+		
+		JLabel lblNewLabel_3 = new JLabel("w1 = ");
 		horizontalBox_2.add(lblNewLabel_3);
 		
-		JTextField textW = new JTextField();
-		textW.setMaximumSize(new Dimension(250,500));
-		horizontalBox_2.add(textW);
-		textW.setColumns(10);
+		JTextField textW1 = new JTextField();
+		textW1.setMaximumSize(new Dimension(50,100));
+		horizontalBox_2.add(textW1);
+		
+		JLabel lblNewLabel_4 = new JLabel(" w2 = ");
+		horizontalBox_2.add(lblNewLabel_4);
+		
+		JTextField textW2 = new JTextField();
+		textW2.setMaximumSize(new Dimension(50,100));
+		horizontalBox_2.add(textW2);
+		
+		
 		
 		JButton btnSearch = new JButton("Search");
 		verticalBox_4.add(btnSearch);
@@ -414,7 +470,7 @@ public class GUI extends javax.swing.JFrame{
 		    public void actionPerformed(ActionEvent e) {		    	
 		    	HeuristicSearch search = null;
 		    	for(Cell c : path ) {
-		    		JButton button =(JButton) topPanel.getComponent(c.x()+(c.y()*nCols));
+		    		JButton button =(JButton) topPanel.getComponent(c.x()+(c.y()*Main.nCols));
 		             switch(c.c) {
 	                	case '0': button.setBackground(Color.BLACK); break; 
 	                	case '1': button.setBackground(Color.GREEN); break;
@@ -425,35 +481,46 @@ public class GUI extends javax.swing.JFrame{
 		    	}
 		    	path.clear();
 		    	
-		    	
+		    	if(Main.heuristic == -1) {
+		    		JOptionPane.showMessageDialog(jframe, "Select heuristic");
+		    		return;
+		    	}
 		    	if(s1.isSelected()) {
 		    		search = new UniformCostSearch();
-		    	}
-		    	if(s2.isSelected()) {
+		    	}else if(s2.isSelected()) {
 		    		search = new A_Search();
-		    	}
-		    	
-		    	if(s3.isSelected()) {
+		    	}else if(s3.isSelected()) {
 		    		try {
-		    			double weight = Double.parseDouble(textW.getText());
+		    			double weight = Double.parseDouble(textW1.getText());
 			    		search = new WeightedASearch(weight);
 		    		}catch(NumberFormatException ex) {
 		    			JOptionPane.showMessageDialog(jframe, "Enter valid weight");
 		    			return;
 		    		}
-		    	}
-		    	if(s4.isSelected()) {
-		    		//sequentialsearch
+		    	}else if(s4.isSelected()) {
+		    		//TODO
+		    		try {
+		    			double w1 = Double.parseDouble(textW1.getText());
+		    			double w2 = Double.parseDouble(textW2.getText());
+		    		}catch(NumberFormatException ex) {
+		    			JOptionPane.showMessageDialog(jframe, "Enter valid weights");
+		    			return;
+		    		}
+		    	}else {
+		    		JOptionPane.showMessageDialog(jframe, "Select search");
+		    		return;
 		    	}
 		    	path = search.search();
 		    	for( Cell c : path ) {
-		    		topPanel.getComponent(c.x()+(c.y()*nCols)).setBackground(Color.YELLOW);
+		    		topPanel.getComponent(c.x()+(c.y()*Main.nCols)).setBackground(Color.YELLOW);
 		    	}
+		    	
+		    	infoLabel0.setText("Time: " + search.getTime() + ", Runtime: " + search.runtime + ", Memory: " + search.memory);
+		    	changeDisplay('t');
+		    	d1.setSelected(true);
 		    	
 		    }
 		});
-		
-		
 		
 		Component horizontalStrut_4 = Box.createHorizontalStrut(20);
 		verticalBox_4.add(horizontalStrut_4);

@@ -16,6 +16,7 @@ public class UniformCostSearch extends HeuristicSearch{
 	
 	public UniformCostSearch() {
 		//pops lowest gValue first
+		resetValues();
 		queue = new PriorityQueue<Cell>(5, Comparator.comparing(Cell::gValue));		
 	}
 }
