@@ -8,38 +8,28 @@
  * Sanidhi B
  */
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import javax.swing.*;
 
 
 public class Main {
 
 	
-	static final int nRows = 7; //120
-	static final int nCols = 6; //160
-	static final int nHardTerrainRegion = 1; //8
-	static final int hardTerrainRegionSize = 2; //31
-	static final int nHighways = 2; //4
-	static final int highwayBlocks = 2; //20
-	static final int minHighwayLength = 5; //100
-	static final int blockedCells = 3; //3840
-	static final int startWithin = 1; //20
-	static final int endWithin = 1; //20
-	static final int minGoalDistance = 5; //100
+	static final int nRows = 120; //120
+	static final int nCols = 160; //160
+	static final int nHardTerrainRegion = 8; //8
+	static final int hardTerrainRegionSize = 31; //31
+	static final int nHighways = 4; //4
+	static final int highwayBlocks = 20; //20
+	static final int minHighwayLength = 100; //100
+	static final int blockedCells = 3840; //3840
+	static final int startWithin = 20; //20
+	static final int endWithin = 20; //20
+	static final int minGoalDistance = 100; //100
 	
 	/*
 	 	Use �0� to indicate a blocked cell
@@ -63,9 +53,52 @@ public class Main {
 	/** MAIN **/
 	public static void main (String[] args) {
 
+		
 		GUI gui = new GUI();
 		gui.setVisible(true);
 		
+		/*
+		heuristic = 5;
+		
+		String[] arr = {"A", "B", "C", "D", "E"};
+		HeuristicSearch search = null;
+		double avgTime = 0;
+		double avgRuntime = 0;
+		double avgLength = 0;
+		double avgNodes = 0;
+		double avgMemory = 0;
+		
+		for(String str : arr ) {
+			for(int i = 1; i <= 10; i++) {
+				intializeFromFile("C:\\Users\\Cindy\\Desktop\\Maps\\Map"+str +"\\map"+str+i+".txt");
+				
+				//search = new UniformCostSearch();
+				//search = new A_Search();
+				//search = new WeightedASearch(1.25);
+				search = new WeightedASearch(2);
+				
+				
+				search.search();
+				
+				avgTime += search.getTime();
+				avgRuntime += search.getRuntime();
+				avgLength += Main.getCell(Main.goal[0], Main.goal[1]).gValue();
+				avgNodes += search.getNodesExpanded();
+				avgMemory += search.getMemory();
+				
+				System.out.print("("+str+ i + ") ");
+				System.out.println(	"Time: " + search.getTime() + ", Runtime: " + search.runtime + ", Length: " + Main.getCell(Main.goal[0], Main.goal[1]).gValue() + ", Nodes Expanded: "  + search.nodesExpanded + ", Memory: " + search.memory);
+			}
+		}
+		avgTime = avgTime/50;
+		avgRuntime = avgRuntime/50;
+		avgLength = avgLength/50;
+		avgNodes = avgNodes/50;
+		avgMemory = avgMemory/50;
+		
+		System.out.print("\n" + "(Average) ");
+		System.out.println(	"Time: " + avgTime + ", Runtime: " + avgRuntime + ", Length: " + avgLength + ", Nodes Expanded: "  + avgNodes + ", Memory: " + avgMemory);
+		*/
 	}
 	
 	

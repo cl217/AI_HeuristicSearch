@@ -20,6 +20,7 @@ public abstract class HeuristicSearch {
 	public int runtime = 0;
 	public int memory = 0;
 	public long time = 0;
+	public int nodesExpanded = 0;
 	
 	/* Page 2 of PDF
  	- The cost of transitioning between two regular unblocked cells is 1 if the agent moves horizontally or vertically and sqrt(2) if the agent moves diagonally. 
@@ -82,7 +83,6 @@ public abstract class HeuristicSearch {
 	}
 
 	/**
-	 * TODO: Algorithm to find shortest path here
 	 * @return ArrayList of Cells = path from start to end
 	 */
 	public ArrayList<Cell> search(){
@@ -117,6 +117,7 @@ public abstract class HeuristicSearch {
 			}
 			
 			ArrayList<Cell> succ = succ(c);
+			nodesExpanded++;
 			for(Cell c2 : succ) {
 				if( !visited.contains(c2) && c2.c != '0' ) {
 					if(queue.contains(c2)) {
@@ -209,6 +210,9 @@ public abstract class HeuristicSearch {
 	}
 	public int getMemory() {
 		return memory;
+	}
+	public int getNodesExpanded() {
+		return nodesExpanded;
 	}
 
 }

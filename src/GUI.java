@@ -4,9 +4,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
 public class GUI extends javax.swing.JFrame{
 	
@@ -75,7 +73,7 @@ public class GUI extends javax.swing.JFrame{
     
     private void newMap() {
     	buttonMap.clear();
-		int bSize = 30;
+		int bSize = 20;
         for( int i = 0; i < Main.nRows; i++ ) {
         	for(int k = 0; k < Main.nCols; k++ ) {
         		String text = Character.toString(Main.map[i][k].c);
@@ -182,6 +180,8 @@ public class GUI extends javax.swing.JFrame{
 		horizontalBox0.add(infoLabel);
 		
 		
+		//Removing this bc its slow
+		/*
 		Box horizontalBox = Box.createHorizontalBox();
 		verticalBox.add(horizontalBox);
 		
@@ -225,13 +225,13 @@ public class GUI extends javax.swing.JFrame{
 	        }
 	    });
 		
-		
 		ButtonGroup dGroup = new ButtonGroup();
 		dGroup.add(d1); 
 		dGroup.add(d2);
 		dGroup.add(d3);
 		dGroup.add(d4);
 		
+		*/
 		
 		Component horizontalStrut = Box.createHorizontalStrut(300);
 		verticalBox.add(horizontalStrut);
@@ -262,7 +262,7 @@ public class GUI extends javax.swing.JFrame{
 		    @Override
 		    public void actionPerformed(ActionEvent e) {	
 			    JFileChooser fileChooser = new JFileChooser();
-			   	fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+			   	fileChooser.setCurrentDirectory(new File("C:\\Users\\Cindy\\Desktop\\MapA"));
 			   	int result = fileChooser.showOpenDialog(jframe);
 			   	if (result == JFileChooser.APPROVE_OPTION) {
 			   	    File selectedFile = fileChooser.getSelectedFile();
@@ -515,9 +515,9 @@ public class GUI extends javax.swing.JFrame{
 		    		topPanel.getComponent(c.x()+(c.y()*Main.nCols)).setBackground(Color.YELLOW);
 		    	}
 		    	
-		    	infoLabel0.setText("Time: " + search.getTime() + ", Runtime: " + search.runtime + ", Memory: " + search.memory);
+		    	infoLabel0.setText("Time: " + search.getTime() + ", Runtime: " + search.runtime + ", Length: " + Main.getCell(Main.goal[0], Main.goal[1]).gValue() + ", Nodes Expanded: "  + search.nodesExpanded + ", Memory: " + search.memory);
 		    	changeDisplay('t');
-		    	d1.setSelected(true);
+		    	//d1.setSelected(true);
 		    	
 		    }
 		});

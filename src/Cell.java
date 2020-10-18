@@ -1,4 +1,3 @@
-import java.util.Arrays;
 /*
  * Introduction to AI
  * Assignment 1: Heuristic Search
