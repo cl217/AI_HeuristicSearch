@@ -27,6 +27,9 @@ public class GUI extends javax.swing.JFrame{
 	ArrayList<Cell> path;
 	JFrame jframe;
     boolean isFirst;
+    
+    SequentialASearch seqSearch = null;
+    boolean isSeq = false;
 
     public GUI(){
     	isFirst =  true;
@@ -95,7 +98,11 @@ public class GUI extends javax.swing.JFrame{
 	                	@Override
 	                	public void actionPerformed(ActionEvent e) {
 	                		Cell c = buttonMap.get(button);
-	                		infoLabel.setText("Selected Cell: terrain(" + c.c + ") g(" + c.gValue  + "), h(" + c.hValue + "), f(" + c.fValue + ")");
+	                		if(isSeq) {
+	                			infoLabel.setText("Selected Cell: terrain(" + c.c + ") g(" + c.seqG[seqSearch.solution]  + "), h(" + c.seqH[seqSearch.solution]+ "), key(" + c.seqKey[seqSearch.solution] + ")");
+	                		}else {
+	                			infoLabel.setText("Selected Cell: terrain(" + c.c + ") g(" + c.gValue  + "), h(" + c.hValue + "), f(" + c.fValue + ")");
+	                		}
 	                	}
 	                });
         		}else {
@@ -505,9 +512,10 @@ public class GUI extends javax.swing.JFrame{
 		    		}
 		    	}else if(s4.isSelected()) {
 		    		try {
+		    			isSeq=true;
 		    			double w1 = Double.parseDouble(textW1.getText());
 		    			double w2 = Double.parseDouble(textW2.getText());
-		    			SequentialASearch seqSearch = new SequentialASearch(w1, w2);
+		    			seqSearch = new SequentialASearch(w1, w2);
 		    			path = seqSearch.search();
 		    			infoLabel0.setText("Time: " + seqSearch.time + "ms, Runtime: " + seqSearch.runtime + ", Length: " + Math.round(Main.getCell(Main.goal[0], Main.goal[1]).seqG[seqSearch.solution]*100.0)/100.0 + ", Nodes Expanded: "  + seqSearch.nodesExpanded + ", Memory: " + seqSearch.memory);
 		    		}catch(NumberFormatException ex) {
@@ -519,6 +527,7 @@ public class GUI extends javax.swing.JFrame{
 		    		return;
 		    	}
 		    	if(!s4.isSelected()) {
+		    		isSeq = false;
 		    		path = search.search();
 			    	infoLabel0.setText("Time: " + search.getTime() + "ms, Runtime: " + search.getRuntime() + ", Length: " + Math.round(Main.getCell(Main.goal[0], Main.goal[1]).gValue()*100.0)/100.0 + ", Nodes Expanded: "  + search.getNodesExpanded() + ", Memory: " + search.getMemory());
 		    	}
