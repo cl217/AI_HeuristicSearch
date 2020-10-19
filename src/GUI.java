@@ -5,7 +5,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.*;
-
+/*
+ * Introduction to AI
+ * Assignment 1: Heuristic Search
+ * 
+ * Made by:
+ * Cindy Lin
+ * Amielyn Musa
+ * Sanidhi B
+ */
 public class GUI extends javax.swing.JFrame{
 	
     // these are the components we need.
@@ -445,8 +453,6 @@ public class GUI extends javax.swing.JFrame{
 		verticalBox_4.add(horizontalBox_2);
 		
 		
-		
-		
 		JLabel lblNewLabel_3 = new JLabel("w1 = ");
 		horizontalBox_2.add(lblNewLabel_3);
 		
@@ -481,7 +487,7 @@ public class GUI extends javax.swing.JFrame{
 		    	}
 		    	path.clear();
 		    	
-		    	if(Main.heuristic == -1) {
+		    	if(Main.heuristic == -1 && !s4.isSelected()) {
 		    		JOptionPane.showMessageDialog(jframe, "Select heuristic");
 		    		return;
 		    	}
@@ -498,10 +504,12 @@ public class GUI extends javax.swing.JFrame{
 		    			return;
 		    		}
 		    	}else if(s4.isSelected()) {
-		    		//TODO
 		    		try {
 		    			double w1 = Double.parseDouble(textW1.getText());
 		    			double w2 = Double.parseDouble(textW2.getText());
+		    			SequentialASearch seqSearch = new SequentialASearch(w1, w2);
+		    			path = seqSearch.search();
+		    			infoLabel0.setText("Time: " + seqSearch.time + "ms, Runtime: " + seqSearch.runtime + ", Length: " + Math.round(Main.getCell(Main.goal[0], Main.goal[1]).seqG[seqSearch.solution]*100.0)/100.0 + ", Nodes Expanded: "  + seqSearch.nodesExpanded + ", Memory: " + seqSearch.memory);
 		    		}catch(NumberFormatException ex) {
 		    			JOptionPane.showMessageDialog(jframe, "Enter valid weights");
 		    			return;
@@ -510,12 +518,14 @@ public class GUI extends javax.swing.JFrame{
 		    		JOptionPane.showMessageDialog(jframe, "Select search");
 		    		return;
 		    	}
-		    	path = search.search();
+		    	if(!s4.isSelected()) {
+		    		path = search.search();
+			    	infoLabel0.setText("Time: " + search.getTime() + "ms, Runtime: " + search.getRuntime() + ", Length: " + Math.round(Main.getCell(Main.goal[0], Main.goal[1]).gValue()*100.0)/100.0 + ", Nodes Expanded: "  + search.getNodesExpanded() + ", Memory: " + search.getMemory());
+		    	}
 		    	for( Cell c : path ) {
 		    		topPanel.getComponent(c.x()+(c.y()*Main.nCols)).setBackground(Color.YELLOW);
 		    	}
 		    	
-		    	infoLabel0.setText("Time: " + search.getTime() + ", Runtime: " + search.runtime + ", Length: " + Main.getCell(Main.goal[0], Main.goal[1]).gValue() + ", Nodes Expanded: "  + search.nodesExpanded + ", Memory: " + search.memory);
 		    	changeDisplay('t');
 		    	//d1.setSelected(true);
 		    	

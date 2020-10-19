@@ -19,10 +19,20 @@ public class Cell {
 	public double dis;
 	int[] coordinate = new int[2];
 	
+	//For sequential A*
+	public double[] seqH;
+	public double[] seqG;
+	public double[] seqKey;
+	
 	
 	public Cell( char c, int[] coordinate) {
 		this.c = c;
 		this.coordinate = coordinate;		
+		
+		seqH = new double[5];
+		seqG = new double[5];
+		seqKey = new double[5];
+		
 	}
 	
 	/*
@@ -78,8 +88,11 @@ public class Cell {
 	public double gValue() {
 		return gValue;
 	}
-	public double weightedA() {
-		return gValue + hValue * Main.weight;
+	public double weightedA(double weight) {
+		return gValue + hValue * weight;
+	}
+	public double seqKey(int i) {
+		return seqKey[i];
 	}
 	
 	

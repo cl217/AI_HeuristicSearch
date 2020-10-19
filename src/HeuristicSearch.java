@@ -103,16 +103,13 @@ public abstract class HeuristicSearch {
 			
 			if( isGoal(c) ) {
 				path.add(c);
-				memory++;
 				Cell backtrack = parent.get(c);
 
 				do{
 					path.add(backtrack);
-					memory++;
 					backtrack = parent.get(backtrack);
 				}while(!isStart(backtrack));
 				path.add(backtrack);
-				memory++;
 				break;
 			}
 			
@@ -200,6 +197,8 @@ public abstract class HeuristicSearch {
 			}
 		}
 	}
+	
+
 	
 	
 	public long getTime() {

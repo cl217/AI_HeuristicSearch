@@ -31,37 +31,25 @@ public class Main {
 	static final int endWithin = 20; //20
 	static final int minGoalDistance = 100; //100
 	
-	/*
-	 	Use �0� to indicate a blocked cell
-		Use �1� to indicate a regular unblocked cell
-		Use �2� to indicate a hard to traverse cell
-		Use �a� to indicate a regular unblocked cell with a highway
-	 	Use �b� to indicate a hard to traverse cell with a highway 
-	*/
 	/** Generated or loaded from file */
 	static ArrayList<int[]> hardTerrainCenter = new ArrayList<int[]>();
 	public static Cell [][] map = new Cell[nRows][nCols];
 	public static int[] start = new int[2]; // (x,y)
 	public static int[] goal = new int[2];  // (x,y)
 
-	static double weight = -1;
 	static int heuristic = -1;
-	
-	
-
 	
 	/** MAIN **/
 	public static void main (String[] args) {
-
 		
 		GUI gui = new GUI();
 		gui.setVisible(true);
 		
+		//heuristic = 5;
 		/*
-		heuristic = 5;
-		
 		String[] arr = {"A", "B", "C", "D", "E"};
-		HeuristicSearch search = null;
+		//HeuristicSearch search = null;
+		SequentialASearch search = null;
 		double avgTime = 0;
 		double avgRuntime = 0;
 		double avgLength = 0;
@@ -75,19 +63,18 @@ public class Main {
 				//search = new UniformCostSearch();
 				//search = new A_Search();
 				//search = new WeightedASearch(1.25);
-				search = new WeightedASearch(2);
-				
-				
+				//search = new WeightedASearch(1.25, 2);
+				search = new SequentialASearch(2, 1.25);
 				search.search();
 				
-				avgTime += search.getTime();
-				avgRuntime += search.getRuntime();
-				avgLength += Main.getCell(Main.goal[0], Main.goal[1]).gValue();
-				avgNodes += search.getNodesExpanded();
-				avgMemory += search.getMemory();
+				avgTime += search.time;
+				avgRuntime += search.runtime;
+				avgLength += Main.getCell(Main.goal[0], Main.goal[1]).seqG[search.solution];
+				avgNodes += search.nodesExpanded;
+				avgMemory += search.memory;
 				
 				System.out.print("("+str+ i + ") ");
-				System.out.println(	"Time: " + search.getTime() + ", Runtime: " + search.runtime + ", Length: " + Main.getCell(Main.goal[0], Main.goal[1]).gValue() + ", Nodes Expanded: "  + search.nodesExpanded + ", Memory: " + search.memory);
+				System.out.println(	"Time: " + search.time + ", Runtime: " + search.runtime + ", Length: " + Math.round(Main.getCell(Main.goal[0], Main.goal[1]).seqG[search.solution]*100.0)/100.0 + ", Nodes Expanded: "  + search.nodesExpanded + ", Memory: " + search.memory);
 			}
 		}
 		avgTime = avgTime/50;
@@ -97,7 +84,7 @@ public class Main {
 		avgMemory = avgMemory/50;
 		
 		System.out.print("\n" + "(Average) ");
-		System.out.println(	"Time: " + avgTime + ", Runtime: " + avgRuntime + ", Length: " + avgLength + ", Nodes Expanded: "  + avgNodes + ", Memory: " + avgMemory);
+		System.out.println(	"Time: " + avgTime + ", Runtime: " + avgRuntime + ", Length: " + Math.round(avgLength*100.0)/100.0 + ", Nodes Expanded: "  + avgNodes + ", Memory: " + avgMemory);
 		*/
 	}
 	
